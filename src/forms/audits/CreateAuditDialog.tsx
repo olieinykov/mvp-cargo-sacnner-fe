@@ -5,6 +5,7 @@ import { Dialog, DialogHeader } from '../../components/ui/dialog';
 import { Button } from '../../components/ui/button';
 import { useCreateAuditMutation } from '../../lib/api/audits';
 import { ImageFilesField } from './ImageFilesField';
+import type { ServerAuditResponse } from '../../lib/utils/useAuditStore';
 
 const fileSchema = z.instanceof(File);
 
@@ -20,6 +21,8 @@ type AuditFormValues = z.infer<typeof auditSchema>;
 type CreateAuditDialogProps = {
   open: boolean;
   handleClose: () => void;
+  /** Called with the full server response after a successful audit creation */
+  onAuditCreated: (response: ServerAuditResponse) => void;
 };
 
 const initialValues: AuditFormValues = {
@@ -29,67 +32,71 @@ const initialValues: AuditFormValues = {
   exterierData: [],
 };
 
-export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({ open, handleClose }) => {
+export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
+  open,
+  handleClose,
+  onAuditCreated,
+}) => {
   const createAuditMutation = useCreateAuditMutation();
 
   const formik = useFormik<AuditFormValues>({
     initialValues,
     validate: (values) => {
       const result = auditSchema.safeParse(values);
-
-      if (result.success) {
-        return {};
-      }
-
+      if (result.success) return {};
       const errors: Record<string, string> = {};
       result.error.errors.forEach((issue) => {
-        if (issue.path[0]) {
-          errors[issue.path[0]] = issue.message;
-        }
+        if (issue.path[0]) errors[issue.path[0]] = issue.message;
       });
-
       return errors;
     },
     onSubmit: async (values, helpers) => {
       try {
-        await createAuditMutation.mutateAsync(values);
+        const response = await createAuditMutation.mutateAsync(values);
         helpers.resetForm();
-        handleClose();
+        // Hand off the full server response — parent will store + open result dialog
+        onAuditCreated(response);
       } catch (error) {
-        // Here you could show toast or inline error if needed
-        // For now we only keep it silent.
         console.error(error);
       }
     },
   });
 
   const handleFilesChange =
-    (field: keyof AuditFormValues) =>
-    (nextFiles: File[]) => {
+    (field: keyof AuditFormValues) => (nextFiles: File[]) => {
       formik.setFieldValue(field, nextFiles);
     };
 
-  if (!open) {
-    return null;
-  }
+  if (!open) return null;
 
-  const bolError = typeof formik.errors.bolData === 'string' ? formik.errors.bolData : undefined;
+  const showAfterSubmit = formik.submitCount > 0;
+
+  const bolError =
+    typeof formik.errors.bolData === 'string' ? formik.errors.bolData : undefined;
   const placardError =
-    typeof formik.errors.placardData === 'string' ? formik.errors.placardData : undefined;
+    typeof formik.errors.placardData === 'string'
+      ? formik.errors.placardData
+      : undefined;
   const intrierError =
-    typeof formik.errors.intrierData === 'string' ? formik.errors.intrierData : undefined;
+    typeof formik.errors.intrierData === 'string'
+      ? formik.errors.intrierData
+      : undefined;
   const exterierError =
-    typeof formik.errors.exterierData === 'string' ? formik.errors.exterierData : undefined;
+    typeof formik.errors.exterierData === 'string'
+      ? formik.errors.exterierData
+      : undefined;
 
   const bolTouched = Boolean(formik.touched.bolData);
   const placardTouched = Boolean(formik.touched.placardData);
   const intrierTouched = Boolean(formik.touched.intrierData);
   const exterierTouched = Boolean(formik.touched.exterierData);
-  const showAfterSubmit = formik.submitCount > 0;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogHeader title="Create audit" description="Upload all required file groups for this audit." />
+      <DialogHeader
+        title="Create audit"
+        description="Upload all required file groups for this audit."
+      />
 
       <form className="space-y-4" onSubmit={formik.handleSubmit}>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -164,4 +171,3 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({ open, hand
     </Dialog>
   );
 };
-

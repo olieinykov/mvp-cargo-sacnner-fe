@@ -1,19 +1,26 @@
 import React from 'react';
 import { Button } from '../components/ui/button';
+import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { AuditsTable } from '../components/audits/AuditsTable';
 import { CreateAuditDialog } from '../forms/audits/CreateAuditDialog';
-import { Card, CardContent, CardHeader } from '../components/ui/card';
+import { AuditResultDialog } from '../components/audits/AuditResultDialog';
+import { useAuditStore } from '../lib/utils/useAuditStore';
+import type { StoredAudit, ServerAuditResponse } from '../lib/utils/useAuditStore';
 
 export const AuditsPage: React.FC = () => {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const { audits, addAudit } = useAuditStore();
 
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+  const [resultAudit, setResultAudit] = React.useState<StoredAudit | null>(null);
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
+  const handleAuditCreated = React.useCallback(
+    (response: ServerAuditResponse) => {
+      const stored = addAudit(response);
+      setIsCreateOpen(false);
+      setResultAudit(stored);
+    },
+    [addAudit],
+  );
 
   return (
     <section className="space-y-4">
@@ -22,7 +29,7 @@ export const AuditsPage: React.FC = () => {
           <h2 className="text-lg font-semibold">Audits list</h2>
           <Button
             type="button"
-            onClick={handleOpenDialog}
+            onClick={() => setIsCreateOpen(true)}
             aria-label="Create audit"
           >
             Create audit
@@ -30,12 +37,24 @@ export const AuditsPage: React.FC = () => {
         </CardHeader>
 
         <CardContent>
-          <AuditsTable />
+          <AuditsTable
+            audits={audits}
+            onRowClick={(audit) => setResultAudit(audit)}
+          />
         </CardContent>
       </Card>
 
-      <CreateAuditDialog open={isDialogOpen} handleClose={handleCloseDialog} />
+      <CreateAuditDialog
+        open={isCreateOpen}
+        handleClose={() => setIsCreateOpen(false)}
+        onAuditCreated={handleAuditCreated}
+      />
+
+      <AuditResultDialog
+        audit={resultAudit}
+        open={resultAudit !== null}
+        onClose={() => setResultAudit(null)}
+      />
     </section>
   );
 };
-

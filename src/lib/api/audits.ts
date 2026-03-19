@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import type { ServerAuditResponse } from '../utils/useAuditStore';
 
 const AUDIT_ENDPOINT = 'http://localhost:3000/api/v1/audit';
 
@@ -15,11 +16,9 @@ const appendFilesToFormData = (formData: FormData, key: string, files: File[]) =
   });
 };
 
-const createAuditRequest = async (payload: AuditFilesPayload): Promise<void> => {
+const createAuditRequest = async (payload: AuditFilesPayload): Promise<ServerAuditResponse> => {
   const formData = new FormData();
 
-  // Backend expects these multipart field names:
-  // bol, placard, intrier, exterier
   appendFilesToFormData(formData, 'bol', payload.bolData);
   appendFilesToFormData(formData, 'placard', payload.placardData);
   appendFilesToFormData(formData, 'intrier', payload.intrierData);
@@ -33,10 +32,11 @@ const createAuditRequest = async (payload: AuditFilesPayload): Promise<void> => 
   if (!response.ok) {
     throw new Error('Failed to create audit');
   }
+
+  return response.json() as Promise<ServerAuditResponse>;
 };
 
 export const useCreateAuditMutation = () =>
   useMutation({
     mutationFn: createAuditRequest,
   });
-
