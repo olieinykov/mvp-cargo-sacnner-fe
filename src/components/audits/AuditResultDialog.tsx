@@ -160,7 +160,11 @@ function SlotPanel({ slot }: { slot: SlotResult }) {
 
       {entries.map(([key, val]) => {
         if (key === 'otherNotes') {
-          const notes = isOtherNotes(val) ? val : [];
+          const raw   = isOtherNotes(val) ? val : [];
+          // Claude sometimes returns plain strings instead of { sign_name, meaning } objects
+          const notes = raw.filter((n) =>
+            typeof n === 'object' && n !== null && n.sign_name?.trim() && n.meaning?.trim()
+          );
           if (!notes.length) return null;
           return (
             <div key={key} className="rounded-md border border-border/40 bg-muted/30 p-3">
@@ -170,7 +174,7 @@ function SlotPanel({ slot }: { slot: SlotResult }) {
               <div className="space-y-1">
                 {notes.map((n, i) => (
                   <p key={i} className="text-xs text-foreground">
-                    <span className="font-medium">{n.sign_name}:</span> {n.meaning}
+                    <span className="font-medium uppercase">{n.sign_name}:</span> {n.meaning}
                   </p>
                 ))}
               </div>
@@ -204,7 +208,7 @@ function SlotPanel({ slot }: { slot: SlotResult }) {
             className="flex items-start justify-between gap-3 border-b border-border/30 pb-2 last:border-0"
           >
             <div className="min-w-0">
-              <p className="text-xs font-medium text-foreground">
+              <p className="text-xs font-medium text-foreground uppercase">
                 {key.replace(/([A-Z])/g, ' $1').trim()}
               </p>
               {val.meaning && (
@@ -226,7 +230,7 @@ function SlotPanel({ slot }: { slot: SlotResult }) {
 const SLOT_TABS = [
   { key: 'bol',      label: 'BOL' },
   { key: 'marker',   label: 'Placard' },
-  { key: 'cargo',    label: 'Cargo' },
+  { key: 'cargo',    label: 'Interior' },
   { key: 'exterier', label: 'Exterior' },
 ] as const;
 
@@ -247,7 +251,9 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
   const { response } = audit;
   const { audit: result } = response;
 
-  const issuesBySource = result.issues.reduce<Record<string, AuditIssue[]>>(
+  const issuesBySource = result.issues
+    .filter((issue) => issue.check && issue.message)
+    .reduce<Record<string, AuditIssue[]>>(
     (acc, issue) => {
       (acc[issue.source] ??= []).push(issue);
       return acc;
@@ -268,6 +274,9 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
         title="Audit Result"
         description={`Created ${new Date(audit.createdAt).toLocaleString()}`}
       />
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
 
       {/* Score + summary row */}
       <div className="mb-4 flex flex-wrap items-start gap-4 rounded-xl border border-border/50 bg-muted/20 p-4">
@@ -341,7 +350,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
 
       {/* Issues tab */}
       {activeTab === 'issues' && (
-        <div className="max-h-[380px] space-y-5 overflow-y-auto pr-1">
+        <div className="space-y-5">
           {Object.keys(issuesBySource).length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-10 text-muted-foreground">
               <span className="text-3xl">✓</span>
@@ -385,11 +394,13 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
             ))}
           </div>
 
-          <div className="max-h-[340px] overflow-y-auto rounded-lg border border-border/50 bg-background p-4">
+          <div className="rounded-lg border border-border/50 bg-background p-4">
             <SlotPanel slot={slotData[activeSlot]} />
           </div>
         </div>
       )}
+
+      </div> {/* end scrollable */}
 
       {/* Close button */}
       <div className="mt-4 flex justify-end">

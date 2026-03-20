@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuditsQuery } from '../api/audits';
 
 // ─── Server response types ─────────────────────────────────────────────────────
 
@@ -49,6 +51,7 @@ export type SlotResult = {
 };
 
 export type ServerAuditResponse = {
+  id?: string;
   bol: SlotResult;
   marker: SlotResult;
   cargo: SlotResult;
@@ -60,63 +63,37 @@ export type ServerAuditResponse = {
 
 export type StoredAudit = {
   id: string;
-  createdAt: string; // ISO string
+  createdAt: string;
   response: ServerAuditResponse;
 };
-
-// ─── localStorage ──────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = 'hazmat_audits';
-
-function loadFromStorage(): StoredAudit[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as unknown[]) : [];
-    // Guard: drop any records that don't have the expected shape
-    return parsed.filter(
-      (item): item is StoredAudit =>
-        typeof item === 'object' &&
-        item !== null &&
-        'response' in item &&
-        typeof (item as StoredAudit).response === 'object' &&
-        (item as StoredAudit).response !== null,
-    );
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(audits: StoredAudit[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(audits));
-  } catch {
-    // quota exceeded — silently ignore
-  }
-}
 
 // ─── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useAuditStore() {
-  const [audits, setAudits] = useState<StoredAudit[]>(loadFromStorage);
+  const queryClient = useQueryClient();
+  const { data: audits = [], isLoading: loading, error } = useAuditsQuery();
 
+  // После POST — добавляем в кеш react-query без лишнего refetch
   const addAudit = useCallback((response: ServerAuditResponse): StoredAudit => {
     const record: StoredAudit = {
-      id: crypto.randomUUID(),
+      id:        response.id ?? crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       response,
     };
-    setAudits((prev) => {
-      const next = [record, ...prev];
-      saveToStorage(next);
-      return next;
-    });
+    queryClient.setQueryData<StoredAudit[]>(['audits'], (prev = []) => [record, ...prev]);
     return record;
-  }, []);
+  }, [queryClient]);
 
-  const clearAudits = useCallback(() => {
-    setAudits([]);
-    localStorage.removeItem(STORAGE_KEY);
-  }, []);
+  // Принудительный refetch
+  const refetch = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['audits'] });
+  }, [queryClient]);
 
-  return { audits, addAudit, clearAudits };
+  return {
+    audits,
+    loading,
+    error: error ? (error as Error).message : null,
+    addAudit,
+    refetch,
+  };
 }

@@ -4,6 +4,7 @@ import type { StoredAudit } from '../../lib/utils/useAuditStore';
 
 type Props = {
   audits: StoredAudit[];
+  loading: boolean;
   onRowClick: (audit: StoredAudit) => void;
 };
 

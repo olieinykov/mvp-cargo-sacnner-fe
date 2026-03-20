@@ -8,10 +8,10 @@ import { useAuditStore } from '../lib/utils/useAuditStore';
 import type { StoredAudit, ServerAuditResponse } from '../lib/utils/useAuditStore';
 
 export const AuditsPage: React.FC = () => {
-  const { audits, addAudit } = useAuditStore();
+  const { audits, loading, error, addAudit, refetch } = useAuditStore();
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
-  const [resultAudit, setResultAudit] = React.useState<StoredAudit | null>(null);
+  const [resultAudit, setResultAudit]   = React.useState<StoredAudit | null>(null);
 
   const handleAuditCreated = React.useCallback(
     (response: ServerAuditResponse) => {
@@ -27,20 +27,46 @@ export const AuditsPage: React.FC = () => {
       <Card>
         <CardHeader className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">Audits list</h2>
-          <Button
-            type="button"
-            onClick={() => setIsCreateOpen(true)}
-            aria-label="Create audit"
-          >
-            Create audit
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={refetch}
+              disabled={loading}
+              aria-label="Refresh audits"
+            >
+              {loading ? 'Loading…' : 'Refresh'}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              aria-label="Create audit"
+            >
+              Create audit
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent>
-          <AuditsTable
-            audits={audits}
-            onRowClick={(audit) => setResultAudit(audit)}
-          />
+          {error ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              Failed to load audits: {error}
+              <button
+                type="button"
+                onClick={refetch}
+                className="ml-3 font-medium underline hover:no-underline"
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <AuditsTable
+              audits={audits}
+              loading={loading}
+              onRowClick={(audit) => setResultAudit(audit)}
+            />
+          )}
         </CardContent>
       </Card>
 
