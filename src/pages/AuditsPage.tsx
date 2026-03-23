@@ -85,7 +85,7 @@ export const AuditsPage: React.FC = () => {
               {pagination && pagination.totalPages > 1 && (
                 <div className="flex shrink-0 items-center justify-between border-t pt-3 text-sm text-muted-foreground">
                   <span>
-                    {pagination.total} Total · page {pagination.page} of {pagination.totalPages}
+                    {pagination.total} Total · Page {pagination.page} of {pagination.totalPages}
                   </span>
                   <div className="flex items-center gap-1">
                     <Button
