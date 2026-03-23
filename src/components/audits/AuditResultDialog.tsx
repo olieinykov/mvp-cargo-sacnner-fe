@@ -231,7 +231,7 @@ const SLOT_TABS = [
   { key: 'bol',      label: 'BOL' },
   { key: 'marker',   label: 'Placard' },
   { key: 'cargo',    label: 'Interior' },
-  { key: 'exterier', label: 'Exterior' },
+  // { key: 'exterier', label: 'Exterior' }, // TODO: exterior disabled
 ] as const;
 
 type SlotKey = typeof SLOT_TABS[number]['key'];
@@ -265,7 +265,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
     bol:      response.bol,
     marker:   response.marker,
     cargo:    response.cargo,
-    exterier: response.exterier,
+    // exterier: response.exterier, // TODO: exterior disabled
   };
 
   return (

@@ -13,7 +13,7 @@ const auditSchema = z.object({
   bolData: z.array(fileSchema).min(1, 'At least one file is required'),
   placardData: z.array(fileSchema).min(1, 'At least one file is required'),
   intrierData: z.array(fileSchema).min(1, 'At least one file is required'),
-  exterierData: z.array(fileSchema).min(1, 'At least one file is required'),
+  // exterierData: z.array(fileSchema).min(1, 'At least one file is required'), // TODO: exterior disabled
 });
 
 type AuditFormValues = z.infer<typeof auditSchema>;
@@ -29,7 +29,7 @@ const initialValues: AuditFormValues = {
   bolData: [],
   placardData: [],
   intrierData: [],
-  exterierData: [],
+  // exterierData: [], // TODO: exterior disabled
 };
 
 export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
@@ -81,15 +81,12 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
     typeof formik.errors.intrierData === 'string'
       ? formik.errors.intrierData
       : undefined;
-  const exterierError =
-    typeof formik.errors.exterierData === 'string'
-      ? formik.errors.exterierData
-      : undefined;
+  // const exterierError = typeof formik.errors.exterierData === 'string' ? formik.errors.exterierData : undefined; // TODO: exterior disabled
 
   const bolTouched = Boolean(formik.touched.bolData);
   const placardTouched = Boolean(formik.touched.placardData);
   const intrierTouched = Boolean(formik.touched.intrierData);
-  const exterierTouched = Boolean(formik.touched.exterierData);
+  // const exterierTouched = Boolean(formik.touched.exterierData); // TODO: exterior disabled
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -124,7 +121,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
             />
           </div>
 
-          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
+          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3 sm:col-span-2 sm:w-[calc(50%-0.375rem)] sm:justify-self-center">
             <ImageFilesField
               id="intrierData"
               label="Interior data"
@@ -136,7 +133,8 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
             />
           </div>
 
-          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
+          {/* TODO: exterior slot temporarily disabled */}
+          {/* <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
             <ImageFilesField
               id="exterierData"
               label="Exterior data"
@@ -146,7 +144,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
               onBlur={formik.handleBlur}
               helpText="Upload one or more files. Minimum: 1."
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex justify-end gap-2">

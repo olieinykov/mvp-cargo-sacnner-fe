@@ -56,7 +56,7 @@ export type ServerAuditResponse = {
   bol: SlotResult;
   marker: SlotResult;
   cargo: SlotResult;
-  exterier: SlotResult;
+  //exterier: SlotResult;
   audit: AuditResult;
 };
 
