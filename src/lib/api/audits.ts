@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ServerAuditResponse, StoredAudit } from '../utils/useAuditStore';
 
-const AUDIT_ENDPOINT = 'http://localhost:3000/api/v1/audit';
+const AUDIT_ENDPOINT = `${import.meta.env.VITE_API_URL}/audit`;
 
 // ─── GET all audits ────────────────────────────────────────────────────────────
 
