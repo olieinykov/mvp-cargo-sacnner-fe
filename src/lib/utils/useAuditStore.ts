@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuditsQuery } from '../api/audits';
+import type { Pagination } from '../api/audits';
 
 // ─── Server response types ─────────────────────────────────────────────────────
 
@@ -71,28 +72,44 @@ export type StoredAudit = {
 
 export function useAuditStore() {
   const queryClient = useQueryClient();
-  const { data: audits = [], isLoading: loading, error } = useAuditsQuery();
 
-  // После POST — добавляем в кеш react-query без лишнего refetch
+  const [page,  setPage]  = useState(1);
+  const [limit, setLimit] = useState(20);
+
+  const { data, isLoading: loading, error } = useAuditsQuery(page, limit);
+
+  const audits: StoredAudit[]   = data?.audits     ?? [];
+  const pagination: Pagination | undefined = data?.pagination;
+
+  // После POST — инвалидируем кеш чтобы подтянуть актуальные данные
   const addAudit = useCallback((response: ServerAuditResponse): StoredAudit => {
     const record: StoredAudit = {
       id:        response.id ?? crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       response,
     };
-    queryClient.setQueryData<StoredAudit[]>(['audits'], (prev = []) => [record, ...prev]);
+    queryClient.invalidateQueries({ queryKey: ['audits'] });
     return record;
   }, [queryClient]);
 
-  // Принудительный refetch
   const refetch = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['audits'] });
   }, [queryClient]);
 
+  const changeLimit = useCallback((newLimit: number) => {
+    setPage(1);
+    setLimit(newLimit);
+  }, []);
+
   return {
     audits,
     loading,
-    error: error ? (error as Error).message : null,
+    error:      error ? (error as Error).message : null,
+    pagination,
+    page,
+    limit,
+    setPage,
+    changeLimit,
     addAudit,
     refetch,
   };

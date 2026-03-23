@@ -5,30 +5,51 @@ const AUDIT_ENDPOINT = 'http://localhost:3000/api/v1/audit';
 
 // ─── GET all audits ────────────────────────────────────────────────────────────
 
-const fetchAudits = async (): Promise<StoredAudit[]> => {
-  const response = await fetch(AUDIT_ENDPOINT);
+type PaginatedResponse = {
+  data: {
+    id: string;
+    created_at: string;
+    response: ServerAuditResponse;
+  }[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+};
+
+export type Pagination = PaginatedResponse['pagination'];
+
+const fetchAudits = async (page: number, limit: number): Promise<{ audits: StoredAudit[]; pagination: Pagination }> => {
+  const url = new URL(AUDIT_ENDPOINT);
+  url.searchParams.set('page',  String(page));
+  url.searchParams.set('limit', String(limit));
+
+  const response = await fetch(url.toString());
 
   if (!response.ok) {
     throw new Error('Failed to fetch audits');
   }
 
-  const rows = await response.json() as {
-    id: string;
-    created_at: string;
-    response: ServerAuditResponse;
-  }[];
+  const json = await response.json() as PaginatedResponse;
 
-  return rows.map((row) => ({
-    id:        row.id,
-    createdAt: row.created_at,
-    response:  row.response,
-  }));
+  return {
+    audits: json.data.map((row) => ({
+      id:        row.id,
+      createdAt: row.created_at,
+      response:  row.response,
+    })),
+    pagination: json.pagination,
+  };
 };
 
-export const useAuditsQuery = () =>
+export const useAuditsQuery = (page: number, limit: number) =>
   useQuery({
-    queryKey: ['audits'],
-    queryFn:  fetchAudits,
+    queryKey: ['audits', page, limit],
+    queryFn:  () => fetchAudits(page, limit),
   });
 
 // ─── POST create audit ─────────────────────────────────────────────────────────

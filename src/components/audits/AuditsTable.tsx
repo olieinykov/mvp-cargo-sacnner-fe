@@ -8,12 +8,6 @@ type Props = {
   onRowClick: (audit: StoredAudit) => void;
 };
 
-function rowBg(score: number): string {
-  if (score < 50) return 'bg-red-500/10 hover:bg-red-500/20';
-  if (score < 80) return 'bg-orange-500/10 hover:bg-orange-500/20';
-  return 'bg-green-500/10 hover:bg-green-500/20';
-}
-
 function scoreBg(score: number): string {
   if (score < 50) return 'bg-red-100 text-red-700';
   if (score < 80) return 'bg-orange-100 text-orange-700';
@@ -78,7 +72,15 @@ function SeverityPills({
   );
 }
 
-export const AuditsTable: React.FC<Props> = ({ audits, onRowClick }) => {
+export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick }) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
+        Loading…
+      </div>
+    );
+  }
+
   if (!audits.length) {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
@@ -106,7 +108,7 @@ export const AuditsTable: React.FC<Props> = ({ audits, onRowClick }) => {
           return (
             <TableRow
               key={audit.id}
-              className={`cursor-pointer transition-colors ${rowBg(result.score)}`}
+              className="cursor-pointer transition-colors hover:bg-muted/50"
               onClick={() => onRowClick(audit)}
             >
               <TableCell className="font-mono text-xs text-muted-foreground">
@@ -120,9 +122,7 @@ export const AuditsTable: React.FC<Props> = ({ audits, onRowClick }) => {
               </TableCell>
               <TableCell>
                 <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${scoreBg(
-                    result.score,
-                  )}`}
+                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${scoreBg(result.score)}`}
                 >
                   {result.score}/100
                 </span>
