@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogHeader } from '../ui/dialog';
+import { Modal } from '../ui/dialog';
 import { Button } from '../ui/button';
 import type {
   StoredAudit,
@@ -310,15 +310,17 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogHeader
-        title="Audit Result"
-        description={`Created ${new Date(audit.createdAt).toLocaleString()}`}
-      />
-
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto">
-
+    <Modal
+      open={open}
+      onOpenChange={onClose}
+      title="Audit Result"
+      description={`Created ${new Date(audit.createdAt).toLocaleString()}`}
+      footer={
+        <Button variant="outline" size="sm" onClick={onClose}>
+          Close
+        </Button>
+      }
+    >
       {/* Score + summary row */}
       <div className="mb-4 flex flex-wrap items-start gap-4 rounded-xl border border-border/50 bg-muted/20 p-4">
         <ScoreRing score={result.score} passed={result.is_passed} />
@@ -443,15 +445,6 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
           </div>
         </div>
       )}
-
-      </div> {/* end scrollable */}
-
-      {/* Close button */}
-      <div className="mt-4 flex justify-end">
-        <Button variant="outline" size="sm" onClick={onClose}>
-          Close
-        </Button>
-      </div>
-    </Dialog>
+    </Modal>
   );
 };

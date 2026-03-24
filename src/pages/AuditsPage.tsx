@@ -1,11 +1,14 @@
-import React from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardHeader, CardContent } from '../components/ui/card';
-import { AuditsTable } from '../components/audits/AuditsTable';
-import { CreateAuditDialog } from '../forms/audits/CreateAuditDialog';
-import { AuditResultDialog } from '../components/audits/AuditResultDialog';
-import { useAuditStore } from '../lib/utils/useAuditStore';
-import type { StoredAudit, ServerAuditResponse } from '../lib/utils/useAuditStore';
+import React from "react";
+import { Button } from "../components/ui/button";
+import { Card, CardHeader, CardContent } from "../components/ui/card";
+import { AuditsTable } from "../components/audits/AuditsTable";
+import { CreateAuditDialog } from "../forms/audits/CreateAuditDialog";
+import { AuditResultDialog } from "../components/audits/AuditResultDialog";
+import { useAuditStore } from "../lib/utils/useAuditStore";
+import type {
+  StoredAudit,
+  ServerAuditResponse,
+} from "../lib/utils/useAuditStore";
 
 // ─── Rows-per-page custom input ────────────────────────────────────────────────
 
@@ -33,10 +36,11 @@ function LimitControl({
   React.useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
   const commit = (raw: string) => {
@@ -51,71 +55,85 @@ function LimitControl({
 
   return (
     <div ref={ref} className="relative flex items-center gap-1.5">
-  <span className="text-sm text-muted-foreground">Rows per page</span>
+      <span className="text-sm text-muted-foreground">Rows per page</span>
 
-  <div className="flex items-center">
-    {/* Input */}
-    <input
-      type="number"
-      min={1}
-      max={100}
-      value={inputVal}
-      disabled={disabled}
-      onChange={(e) => setInputVal(e.target.value)}
-      onBlur={(e) => commit(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') commit((e.target as HTMLInputElement).value);
-      }}
-      className="h-8 w-[60px] rounded-l-md border border-r-0 border-input bg-background px-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 z-10"
-      aria-label="Rows per page"
-    />
-
-    {/* Chevron toggle */}
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={() => setOpen((o) => !o)}
-      className="flex h-8 items-center rounded-r-md border border-input bg-background px-1.5 text-muted-foreground transition-colors hover:bg-muted focus:outline-none disabled:opacity-50"
-      aria-label="Open rows per page presets"
-    >
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 14 14"
-        fill="none"
-        className={`transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
-      >
-        <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  </div>
-
-  {open && (
-    <div className="absolute bottom-full right-0 z-50 mb-1.5 min-w-[80px] overflow-hidden rounded-lg border border-border bg-background shadow-lg">
-      {LIMIT_PRESETS.map((opt) => (
-        <button
-          key={opt}
-          type="button"
-          onClick={() => {
-            onChange(opt);
-            setInputVal(String(opt));
-            setOpen(false);
+      <div className="flex items-center">
+        {/* Input */}
+        <input
+          type="number"
+          min={1}
+          max={100}
+          value={inputVal}
+          disabled={disabled}
+          onChange={(e) => setInputVal(e.target.value)}
+          onBlur={(e) => commit(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") commit((e.target as HTMLInputElement).value);
           }}
-          className={`flex w-full items-center justify-between px-3 py-1.5 text-sm transition-colors hover:bg-muted ${
-            opt === value ? 'font-semibold text-foreground' : 'text-muted-foreground'
-          }`}
+          className="h-8 w-[60px] rounded-l-md border border-r-0 border-input bg-background px-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 z-10"
+          aria-label="Rows per page"
+        />
+
+        {/* Chevron toggle */}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => setOpen((o) => !o)}
+          className="flex h-8 items-center rounded-r-md border border-input bg-background px-1.5 text-muted-foreground transition-colors hover:bg-muted focus:outline-none disabled:opacity-50"
+          aria-label="Open rows per page presets"
         >
-          {opt}
-          {opt === value && (
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            className={`transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          >
+            <path
+              d="M3 5l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
-      ))}
+      </div>
+
+      {open && (
+        <div className="absolute bottom-full right-0 z-50 mb-1.5 min-w-[80px] overflow-hidden rounded-lg border border-border bg-background shadow-lg">
+          {LIMIT_PRESETS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => {
+                onChange(opt);
+                setInputVal(String(opt));
+                setOpen(false);
+              }}
+              className={`flex w-full items-center justify-between px-3 py-1.5 text-sm transition-colors hover:bg-muted ${
+                opt === value
+                  ? "font-semibold text-foreground"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {opt}
+              {opt === value && (
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M2 6l3 3 5-5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
-  )}
-</div>
   );
 }
 
@@ -138,17 +156,18 @@ function Pagination({
 }) {
   // Build visible page numbers with ellipsis
   const pages = React.useMemo(() => {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    const result: (number | '…')[] = [];
+    if (totalPages <= 7)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const result: (number | "…")[] = [];
     const addRange = (from: number, to: number) => {
       for (let i = from; i <= to; i++) result.push(i);
     };
     result.push(1);
-    if (page > 4) result.push('…');
+    if (page > 4) result.push("…");
     const start = Math.max(2, page - 2);
-    const end   = Math.min(totalPages - 1, page + 2);
+    const end = Math.min(totalPages - 1, page + 2);
     addRange(start, end);
-    if (page < totalPages - 3) result.push('…');
+    if (page < totalPages - 3) result.push("…");
     result.push(totalPages);
     return result;
   }, [page, totalPages]);
@@ -163,7 +182,13 @@ function Pagination({
         className="flex h-8 items-center gap-1 rounded-md border border-input bg-background px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M9 11L5 7l4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         Previous
       </button>
@@ -171,8 +196,11 @@ function Pagination({
       {/* Page numbers */}
       <div className="flex items-center gap-0.5">
         {pages.map((p, i) =>
-          p === '…' ? (
-            <span key={`ellipsis-${i}`} className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground">
+          p === "…" ? (
+            <span
+              key={`ellipsis-${i}`}
+              className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground"
+            >
               …
             </span>
           ) : (
@@ -183,8 +211,8 @@ function Pagination({
               disabled={disabled}
               className={`flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-40 ${
                 p === page
-                  ? 'bg-foreground text-background'
-                  : 'border border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? "bg-foreground text-background"
+                  : "border border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {p}
@@ -202,7 +230,13 @@ function Pagination({
       >
         Next
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M5 3l4 4-4 4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
     </div>
@@ -225,7 +259,9 @@ export const AuditsPage: React.FC = () => {
   } = useAuditStore();
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
-  const [resultAudit, setResultAudit]   = React.useState<StoredAudit | null>(null);
+  const [resultAudit, setResultAudit] = React.useState<StoredAudit | null>(
+    null,
+  );
 
   const handleAuditCreated = React.useCallback(
     (response: ServerAuditResponse) => {
@@ -240,13 +276,28 @@ export const AuditsPage: React.FC = () => {
     <section className="flex h-full flex-col gap-4 overflow-hidden">
       <Card className="flex min-h-0 flex-1 flex-col">
         <CardHeader className="flex shrink-0 items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold">Audits list</h2>
+          <h2 className="text-lg font-semibold">Audits List</h2>
           <Button
             type="button"
+            size="sm"
+            className="gap-1.5"
             onClick={() => setIsCreateOpen(true)}
-            aria-label="Create audit"
+            aria-label="Create Audit"
           >
-            Create audit
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-3.5 w-3.5 shrink-0"
+              aria-hidden="true"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Create Audit
           </Button>
         </CardHeader>
 
@@ -257,18 +308,20 @@ export const AuditsPage: React.FC = () => {
             </div>
           ) : (
             <>
-              {/* Scrollable table area */}
-              <div className="min-h-0 flex-1 overflow-y-auto">
-                <AuditsTable
-                  audits={audits}
-                  loading={loading}
-                  onRowClick={(audit) => setResultAudit(audit)}
-                />
+              {/* Fixed rounded border; only inner content scrolls (border does not move / clip corners) */}
+              <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-background">
+                <div className="h-full max-h-full overflow-y-auto overscroll-y-contain">
+                  <AuditsTable
+                    audits={audits}
+                    loading={loading}
+                    onRowClick={(audit) => setResultAudit(audit)}
+                  />
+                </div>
               </div>
 
               {/* Pagination + limit bar */}
               {pagination && (
-                <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t pt-3">
+                <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 pt-3">
                   {/* Left: total info */}
                   <span className="text-sm text-muted-foreground">
                     {pagination.total} Audits

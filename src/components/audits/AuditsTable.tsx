@@ -1,6 +1,13 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell } from '../ui/table';
+import { Skeleton } from '../ui/skeleton';
 import type { StoredAudit } from '../../lib/utils/useAuditStore';
+
+const SKELETON_ROW_COUNT = 8;
+
+/** Shared compact tag styles: small type, light padding, normal weight */
+const TAG =
+  'inline-flex items-center rounded-full px-1.5 py-0.5 text-[11px] font-normal leading-tight';
 
 type Props = {
   audits: StoredAudit[];
@@ -17,14 +24,15 @@ function scoreBg(score: number): string {
 function StatusBadge({ passed }: { passed: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+      className={`${TAG} gap-1.5 ${
         passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
       }`}
     >
       <span
-        className={`h-1.5 w-1.5 rounded-full ${
+        className={`h-1.5 w-1.5 shrink-0 rounded-full ${
           passed ? 'bg-green-500' : 'bg-red-500'
         }`}
+        aria-hidden="true"
       />
       {passed ? 'PASSED' : 'FAILED'}
     </span>
@@ -47,24 +55,24 @@ function SeverityPills({
   }
 
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap gap-1.5">
       {counts.critical > 0 && (
-        <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-semibold text-red-700">
+        <span className={`${TAG} bg-red-100 text-red-700`}>
           {counts.critical} Critical
         </span>
       )}
       {counts.major > 0 && (
-        <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-xs font-semibold text-orange-700">
+        <span className={`${TAG} bg-orange-100 text-orange-700`}>
           {counts.major} Major
         </span>
       )}
       {counts.minor > 0 && (
-        <span className="rounded-full bg-yellow-100 px-1.5 py-0.5 text-xs font-semibold text-yellow-700">
+        <span className={`${TAG} bg-yellow-100 text-yellow-700`}>
           {counts.minor} Minor
         </span>
       )}
       {counts.warning > 0 && (
-        <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-xs font-semibold text-blue-700">
+        <span className={`${TAG} bg-blue-100 text-blue-700`}>
           {counts.warning} Warning
         </span>
       )}
@@ -75,8 +83,52 @@ function SeverityPills({
 export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick }) => {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12 text-sm text-muted-foreground">
-        Loading…
+      <div
+        role="status"
+        aria-busy="true"
+        aria-label="Loading audits"
+        className="w-full"
+      >
+        <Table className="[&_thead_tr]:border-b-0">
+          <thead>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Score</TableHead>
+              <TableHead>Issues</TableHead>
+              <TableHead>Summary</TableHead>
+            </TableRow>
+          </thead>
+          <tbody>
+            {Array.from({ length: SKELETON_ROW_COUNT }).map((_, rowIndex) => (
+              <TableRow key={`audit-skeleton-${rowIndex}`}>
+                <TableCell>
+                  <Skeleton className="h-4 w-6" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-40" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-5 w-[4.5rem] rounded-full" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-5 w-12 rounded-full" />
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Skeleton className="h-5 w-[3.25rem] rounded-full" />
+                    <Skeleton className="h-5 w-11 rounded-full" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-full max-w-xs" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </tbody>
+        </Table>
+        <span className="sr-only">Loading audits…</span>
       </div>
     );
   }
@@ -91,7 +143,7 @@ export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick }) =>
   }
 
   return (
-    <Table>
+    <Table className="[&_thead_tr]:border-b-0">
       <thead>
         <TableRow>
           <TableHead>#</TableHead>
@@ -121,9 +173,7 @@ export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick }) =>
                 <StatusBadge passed={result.is_passed} />
               </TableCell>
               <TableCell>
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${scoreBg(result.score)}`}
-                >
+                <span className={`${TAG} ${scoreBg(result.score)}`}>
                   {result.score}/100
                 </span>
               </TableCell>

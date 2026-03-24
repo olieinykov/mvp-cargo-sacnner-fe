@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import { z } from 'zod';
-import { Dialog, DialogHeader } from '../../components/ui/dialog';
+import { Modal } from '../../components/ui/dialog';
 import { Button } from '../../components/ui/button';
 import { useCreateAuditMutation } from '../../lib/api/audits';
 import { ImageFilesField } from './ImageFilesField';
@@ -24,6 +24,8 @@ type CreateAuditDialogProps = {
   /** Called with the full server response after a successful audit creation */
   onAuditCreated: (response: ServerAuditResponse) => void;
 };
+
+const CREATE_AUDIT_FORM_ID = 'create-audit-form';
 
 const initialValues: AuditFormValues = {
   bolData: [],
@@ -89,15 +91,38 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   // const exterierTouched = Boolean(formik.touched.exterierData); // TODO: exterior disabled
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogHeader
-        title="Create audit"
-        description="Upload all required file groups for this audit."
-      />
-
-      <form className="space-y-0" onSubmit={formik.handleSubmit}>
-        <div className="flex flex-col"> 
-
+    <Modal
+      open={open}
+      onOpenChange={handleClose}
+      title="Create audit"
+      description="Upload all required file groups for this audit."
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            aria-label="Cancel create audit"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form={CREATE_AUDIT_FORM_ID}
+            aria-label="Submit create audit form"
+            disabled={createAuditMutation.isPending}
+          >
+            {createAuditMutation.isPending ? 'Creating…' : 'Create'}
+          </Button>
+        </>
+      }
+    >
+      <form
+        id={CREATE_AUDIT_FORM_ID}
+        className="flex flex-col"
+        onSubmit={formik.handleSubmit}
+      >
+        <div className="flex flex-col">
           {/* BOL section */}
           <div className="py-5 first:pt-0">
             <div className="mb-3">
@@ -153,26 +178,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
           </div>
 
         </div>
-
-        <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            aria-label="Cancel create audit"
-          >
-            Cancel
-          </Button>
-
-          <Button
-            type="submit"
-            aria-label="Submit create audit form"
-            disabled={createAuditMutation.isPending}
-          >
-            {createAuditMutation.isPending ? 'Creating…' : 'Create'}
-          </Button>
-        </div>
       </form>
-    </Dialog>
+    </Modal>
   );
 };
