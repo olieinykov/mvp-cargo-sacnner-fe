@@ -1,18 +1,18 @@
-import React from 'react';
-import { useFormik } from 'formik';
-import { z } from 'zod';
-import { Modal } from '../../components/ui/dialog';
-import { Button } from '../../components/ui/button';
-import { useCreateAuditMutation } from '../../lib/api/audits';
-import { ImageFilesField } from './ImageFilesField';
-import type { ServerAuditResponse } from '../../lib/utils/useAuditStore';
+import React from "react";
+import { useFormik } from "formik";
+import { z } from "zod";
+import { Modal } from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
+import { useCreateAuditMutation } from "../../lib/api/audits";
+import { ImageFilesField } from "./ImageFilesField";
+import type { ServerAuditResponse } from "../../lib/utils/useAuditStore";
 
 const fileSchema = z.instanceof(File);
 
 const auditSchema = z.object({
-  bolData: z.array(fileSchema).min(1, 'At least one file is required'),
-  placardData: z.array(fileSchema).min(1, 'At least one file is required'),
-  intrierData: z.array(fileSchema).min(1, 'At least one file is required'),
+  bolData: z.array(fileSchema).min(1, "At least one file is required"),
+  placardData: z.array(fileSchema).min(1, "At least one file is required"),
+  intrierData: z.array(fileSchema).min(1, "At least one file is required"),
   // exterierData: z.array(fileSchema).min(1, 'At least one file is required'), // TODO: exterior disabled
 });
 
@@ -25,7 +25,7 @@ type CreateAuditDialogProps = {
   onAuditCreated: (response: ServerAuditResponse) => void;
 };
 
-const CREATE_AUDIT_FORM_ID = 'create-audit-form';
+const CREATE_AUDIT_FORM_ID = "create-audit-form";
 
 const initialValues: AuditFormValues = {
   bolData: [],
@@ -74,11 +74,17 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   const showAfterSubmit = formik.submitCount > 0;
 
   const bolError =
-    typeof formik.errors.bolData === 'string' ? formik.errors.bolData : undefined;
+    typeof formik.errors.bolData === "string"
+      ? formik.errors.bolData
+      : undefined;
   const placardError =
-    typeof formik.errors.placardData === 'string' ? formik.errors.placardData : undefined;
+    typeof formik.errors.placardData === "string"
+      ? formik.errors.placardData
+      : undefined;
   const intrierError =
-    typeof formik.errors.intrierData === 'string' ? formik.errors.intrierData : undefined;
+    typeof formik.errors.intrierData === "string"
+      ? formik.errors.intrierData
+      : undefined;
 
   const bolTouched = Boolean(formik.touched.bolData);
   const placardTouched = Boolean(formik.touched.placardData);
@@ -87,15 +93,18 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   const bolDone = formik.values.bolData.length > 0;
   const placardDone = formik.values.placardData.length > 0;
   const intrierDone = formik.values.intrierData.length > 0;
-  const filledCount = [bolDone, placardDone, intrierDone].filter(Boolean).length;
+  const filledCount = [bolDone, placardDone, intrierDone].filter(
+    Boolean,
+  ).length;
   const totalCount = 3;
 
   const sections = [
     {
       step: 1,
-      title: 'BOL data',
-      description: 'Bill of Lading — shipping document with hazmat entry details.',
-      id: 'bolData' as keyof AuditFormValues,
+      title: "BOL data",
+      description:
+        "Bill of Lading — shipping document with hazmat entry details.",
+      id: "bolData" as keyof AuditFormValues,
       files: formik.values.bolData,
       error: bolTouched || showAfterSubmit ? bolError : undefined,
       done: bolDone,
@@ -103,9 +112,9 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
     },
     {
       step: 2,
-      title: 'Placard data',
-      description: 'Photos of hazmat placards on all sides of the trailer.',
-      id: 'placardData' as keyof AuditFormValues,
+      title: "Placard data",
+      description: "Photos of hazmat placards on all sides of the trailer.",
+      id: "placardData" as keyof AuditFormValues,
       files: formik.values.placardData,
       error: placardTouched || showAfterSubmit ? placardError : undefined,
       done: placardDone,
@@ -113,9 +122,10 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
     },
     {
       step: 3,
-      title: 'Interior data',
-      description: 'Photos of cargo inside the vehicle showing labels and securement.',
-      id: 'intrierData' as keyof AuditFormValues,
+      title: "Interior data",
+      description:
+        "Photos of cargo inside the vehicle showing labels and securement.",
+      id: "intrierData" as keyof AuditFormValues,
       files: formik.values.intrierData,
       error: intrierTouched || showAfterSubmit ? intrierError : undefined,
       done: intrierDone,
@@ -130,7 +140,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
       title="Create audit"
       description={
         filledCount === totalCount
-          ? 'All sections ready — you can submit.'
+          ? "All sections ready — you can submit."
           : `${filledCount} of ${totalCount} sections ready`
       }
       footer={
@@ -153,13 +163,31 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
           >
             {createAuditMutation.isPending ? (
               <span className="flex items-center gap-2">
-                <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                <svg
+                  className="h-3.5 w-3.5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
                 </svg>
                 Creating…
               </span>
-            ) : 'Create'}
+            ) : (
+              "Create"
+            )}
           </Button>
         </>
       }
@@ -175,48 +203,68 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
       </div>
 
       <form id={CREATE_AUDIT_FORM_ID} onSubmit={formik.handleSubmit}>
-        {sections.map(({ step, title, description, id, files, error, done, isLast }) => (
-          <div key={id} className="flex gap-4">
-            {/* Step indicator */}
-            <div className="flex flex-col items-center">
-              <div
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300 ${
-                  done
-                    ? 'bg-emerald-500 text-white'
-                    : 'border border-border bg-muted text-muted-foreground'
-                }`}
-                aria-label={done ? `Step ${step} complete` : `Step ${step}`}
-              >
-                {done ? (
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                    <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                ) : (
-                  step
+        {sections.map(
+          ({ step, title, description, id, files, error, done, isLast }) => (
+            <div key={id} className="flex gap-4">
+              {/* Step indicator */}
+              <div className="flex flex-col items-center">
+                <div
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300 ${
+                    done
+                      ? "bg-emerald-500 text-white"
+                      : "border border-border bg-muted text-muted-foreground"
+                  }`}
+                  aria-label={done ? `Step ${step} complete` : `Step ${step}`}
+                >
+                  {done ? (
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M2 6l3 3 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  ) : (
+                    step
+                  )}
+                </div>
+                {!isLast && (
+                  <div
+                    className={`mt-1 w-px flex-1 transition-colors duration-300 ${done ? "bg-emerald-300" : "bg-border/50"}`}
+                  />
                 )}
               </div>
-              {!isLast && (
-                <div className={`mt-1 w-px flex-1 transition-colors duration-300 ${done ? 'bg-emerald-300' : 'bg-border/50'}`} />
-              )}
-            </div>
 
-            {/* Section content */}
-            <div className={`flex-1 ${isLast ? 'pb-0' : 'pb-7'}`}>
-              <div className="mb-3">
-                <p className="text-sm font-semibold text-foreground">{title}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+              {/* Section content */}
+              <div className={`flex-1 ${isLast ? "pb-0" : "pb-7"}`}>
+                <div className="mb-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    {title}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {description}
+                  </p>
+                </div>
+                <ImageFilesField
+                  id={id}
+                  label=""
+                  files={files}
+                  onFilesChange={handleFilesChange(id)}
+                  error={error}
+                  onBlur={formik.handleBlur}
+                />
               </div>
-              <ImageFilesField
-                id={id}
-                label=""
-                files={files}
-                onFilesChange={handleFilesChange(id)}
-                error={error}
-                onBlur={formik.handleBlur}
-              />
             </div>
-          </div>
-        ))}
+          ),
+        )}
       </form>
     </Modal>
   );
