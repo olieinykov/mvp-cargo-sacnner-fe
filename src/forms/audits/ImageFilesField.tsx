@@ -103,22 +103,19 @@ export const ImageFilesField: React.FC<ImageFilesFieldProps> = ({
   };
 
   const cardsContainerClassName = useMemo(
-    () => cn('grid grid-cols-2 gap-1.5 max-w-[220px] justify-start'),
+    () => cn('flex flex-wrap w-full gap-3 rounded-xl border border-dashed border-border/60 bg-muted/5 p-4 min-h-[110px] items-start'),
     [],
   );
 
   const previewCardClassName = useMemo(
-    () => cn('relative h-20 w-full min-w-0 overflow-hidden rounded-md border border-border/50 bg-background'),
+    () => cn('relative h-20 w-32 shrink-0 overflow-hidden rounded-md border border-border/50 bg-background'),
     [],
   );
 
   const addCardClassName = useMemo(
-    () =>
-      cn(
-        'flex h-20 w-full min-w-0 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border/60 bg-background text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-      ),
+    () => cn('flex h-20 w-32 shrink-0 flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border/60 bg-background text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'),
     [],
-  );
+  );  
 
   return (
     <div className="space-y-3">

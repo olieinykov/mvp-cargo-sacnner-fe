@@ -145,34 +145,52 @@ function IssueCard({ issue }: { issue: AuditIssue }) {
 
 // ─── Slot detail panel ─────────────────────────────────────────────────────────
 
-function SlotPanel({ slot }: { slot: SlotResult }) {
-  const entries = Object.entries(slot.extracted as SlotExtracted);
+/**
+ * Merges an array of SlotResult into a unified view:
+ * - For each field key, collect all mainValues and meanings across results
+ * - mainValues are joined with " ; "
+ * - meanings are rendered one per line
+ */
+function SlotPanel({ slots }: { slots: SlotResult[] }) {
+  if (!slots.length) return null;
+
+  // Collect all field keys in order (from first slot)
+  const allKeys = Object.keys(slots[0].extracted as SlotExtracted);
+
+  // Average confidence across all slots
+  const avgConfidence = Math.round(
+    (slots.reduce((sum, s) => sum + s.confidence.overall, 0) / slots.length) * 100,
+  );
 
   return (
     <div className="space-y-2">
       {/* Confidence */}
       <div className="mb-3 flex items-center gap-2 rounded-md bg-muted/40 px-3 py-2">
         <span className="text-xs text-muted-foreground">Confidence:</span>
-        <span className="text-xs font-semibold text-foreground">
-          {Math.round(slot.confidence.overall * 100)}%
-        </span>
+        <span className="text-xs font-semibold text-foreground">{avgConfidence}%</span>
+        {slots.length > 1 && (
+          <span className="text-xs text-muted-foreground">(avg across {slots.length} images)</span>
+        )}
       </div>
 
-      {entries.map(([key, val]) => {
+      {allKeys.map((key) => {
         if (key === 'otherNotes') {
-          const raw   = isOtherNotes(val) ? val : [];
-          // Claude sometimes returns plain strings instead of { sign_name, meaning } objects
-          const notes = raw.filter((n) =>
-            typeof n === 'object' && n !== null && n.sign_name?.trim() && n.meaning?.trim()
-          );
-          if (!notes.length) return null;
+          // Collect all valid notes from all slots
+          const allNotes = slots.flatMap((s) => {
+            const raw = (s.extracted as SlotExtracted).otherNotes;
+            if (!isOtherNotes(raw)) return [];
+            return raw.filter(
+              (n) => typeof n === 'object' && n !== null && n.sign_name?.trim() && n.meaning?.trim(),
+            );
+          });
+          if (!allNotes.length) return null;
           return (
             <div key={key} className="rounded-md border border-border/40 bg-muted/30 p-3">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Other Notes
               </p>
               <div className="space-y-1">
-                {notes.map((n, i) => (
+                {allNotes.map((n, i) => (
                   <p key={i} className="text-xs text-foreground">
                     <span className="font-medium uppercase">{n.sign_name}:</span> {n.meaning}
                   </p>
@@ -182,37 +200,60 @@ function SlotPanel({ slot }: { slot: SlotResult }) {
           );
         }
 
-        if (!isExtractedField(val)) return null;
+        // Gather fields for this key across all slots
+        const fields = slots
+          .map((s) => (s.extracted as SlotExtracted)[key])
+          .filter(isExtractedField);
 
-        const displayValue =
-          val.mainValue === null
+        if (!fields.length) return null;
+
+        // Build joined display value: unique non-null values separated by " ; "
+        const rawValues = fields.map((f) => f.mainValue);
+        const displayParts = rawValues.map((mv) =>
+          mv === null
             ? '—'
-            : typeof val.mainValue === 'boolean'
-            ? val.mainValue
-              ? 'Yes'
-              : 'No'
-            : String(val.mainValue);
+            : typeof mv === 'boolean'
+            ? mv ? 'Yes' : 'No'
+            : String(mv),
+        );
+        // Deduplicate if all identical, otherwise show all
+        const uniqueParts = [...new Set(displayParts)];
+        const displayValue = uniqueParts.join(' ; ');
 
+        // Color logic: if any is false → red, if all true → green, else neutral
+        const boolValues = rawValues.filter((v) => typeof v === 'boolean') as boolean[];
         const valueColor =
-          typeof val.mainValue === 'boolean'
-            ? val.mainValue
+          boolValues.length > 0
+            ? boolValues.every(Boolean)
               ? 'text-green-600'
+              : boolValues.some(Boolean)
+              ? 'text-yellow-600'
               : 'text-red-500'
-            : val.mainValue === null
+            : rawValues.every((v) => v === null)
             ? 'text-muted-foreground'
             : 'text-foreground';
+
+        // Unique meanings (skip empty)
+        const meanings = fields
+          .map((f) => f.meaning)
+          .filter((m): m is string => !!m && m.trim().length > 0);
+        const uniqueMeanings = [...new Set(meanings)];
 
         return (
           <div
             key={key}
             className="flex items-start justify-between gap-3 border-b border-border/30 pb-2 last:border-0"
           >
-            <div className="min-w-0">
-              <p className="text-xs font-medium text-foreground uppercase">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium uppercase text-foreground">
                 {key.replace(/([A-Z])/g, ' $1').trim()}
               </p>
-              {val.meaning && (
-                <p className="text-xs text-muted-foreground">{val.meaning}</p>
+              {uniqueMeanings.length > 0 && (
+                <div className="mt-0.5 space-y-0.5">
+                  {uniqueMeanings.map((m, i) => (
+                    <p key={i} className="text-xs text-muted-foreground">{m}</p>
+                  ))}
+                </div>
               )}
             </div>
             <span className={`flex-shrink-0 text-xs font-semibold ${valueColor}`}>
@@ -261,10 +302,10 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
     {},
   );
 
-  const slotData: Record<SlotKey, SlotResult> = {
-    bol:      response.bol,
-    marker:   response.marker,
-    cargo:    response.cargo,
+  const slotData: Record<SlotKey, SlotResult[]> = {
+    bol:      Array.isArray(response.bol)    ? response.bol    : [response.bol],
+    marker:   Array.isArray(response.marker) ? response.marker : [response.marker],
+    cargo:    Array.isArray(response.cargo)  ? response.cargo  : [response.cargo],
     // exterier: response.exterier, // TODO: exterior disabled
   };
 
@@ -378,24 +419,27 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
         <div className="space-y-3">
           {/* Slot selector */}
           <div className="flex gap-1 rounded-lg border border-border/50 bg-muted/30 p-1">
-            {SLOT_TABS.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setActiveSlot(key)}
-                className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  activeSlot === key
-                    ? 'bg-background shadow-sm text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            {SLOT_TABS.map(({ key, label }) => {
+              const count = slotData[key].length;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setActiveSlot(key)}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    activeSlot === key
+                      ? 'bg-background shadow-sm text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {label}{count > 1 ? ` (${count})` : ''}
+                </button>
+              );
+            })}
           </div>
 
           <div className="rounded-lg border border-border/50 bg-background p-4">
-            <SlotPanel slot={slotData[activeSlot]} />
+            <SlotPanel slots={slotData[activeSlot]} />
           </div>
         </div>
       )}

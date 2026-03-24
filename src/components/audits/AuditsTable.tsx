@@ -50,22 +50,22 @@ function SeverityPills({
     <div className="flex flex-wrap gap-1">
       {counts.critical > 0 && (
         <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-semibold text-red-700">
-          {counts.critical}C
+          {counts.critical} Critical
         </span>
       )}
       {counts.major > 0 && (
         <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-xs font-semibold text-orange-700">
-          {counts.major}M
+          {counts.major} Major
         </span>
       )}
       {counts.minor > 0 && (
         <span className="rounded-full bg-yellow-100 px-1.5 py-0.5 text-xs font-semibold text-yellow-700">
-          {counts.minor}m
+          {counts.minor} Minor
         </span>
       )}
       {counts.warning > 0 && (
         <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-xs font-semibold text-blue-700">
-          {counts.warning}W
+          {counts.warning} Warning
         </span>
       )}
     </div>

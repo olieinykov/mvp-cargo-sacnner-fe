@@ -95,59 +95,66 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
         description="Upload all required file groups for this audit."
       />
 
-      <form className="space-y-4" onSubmit={formik.handleSubmit}>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
+      <form className="space-y-0" onSubmit={formik.handleSubmit}>
+        <div className="flex flex-col"> 
+
+          {/* BOL section */}
+          <div className="py-5 first:pt-0">
+            <div className="mb-3">
+              <p className="text-sm font-semibold text-foreground">BOL data</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Bill of Lading — shipping document with hazmat entry details. Upload one or more files.
+              </p>
+            </div>
             <ImageFilesField
               id="bolData"
-              label="BOL data"
+              label=""
               files={formik.values.bolData}
               onFilesChange={handleFilesChange('bolData')}
               error={bolTouched || showAfterSubmit ? bolError : undefined}
               onBlur={formik.handleBlur}
-              helpText="Upload one or more files. Minimum: 1."
             />
           </div>
 
-          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
+          {/* Placard section */}
+          <div className="py-5">
+            <div className="mb-3">
+              <p className="text-sm font-semibold text-foreground">Placard data</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Photos of hazmat placards on all sides of the trailer. Upload one or more files.
+              </p>
+            </div>
             <ImageFilesField
               id="placardData"
-              label="Placard data"
+              label=""
               files={formik.values.placardData}
               onFilesChange={handleFilesChange('placardData')}
               error={placardTouched || showAfterSubmit ? placardError : undefined}
               onBlur={formik.handleBlur}
-              helpText="Upload one or more files. Minimum: 1."
             />
           </div>
 
-          <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3 sm:col-span-2 sm:w-[calc(50%-0.375rem)] sm:justify-self-center">
+          {/* Interior section */}
+          <div className="py-5">
+            <div className="mb-3">
+              <p className="text-sm font-semibold text-foreground">Interior data</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Photos of cargo inside the vehicle showing labels and securement. Upload one or more files.
+              </p>
+            </div>
             <ImageFilesField
               id="intrierData"
-              label="Interior data"
+              label=""
               files={formik.values.intrierData}
               onFilesChange={handleFilesChange('intrierData')}
               error={intrierTouched || showAfterSubmit ? intrierError : undefined}
               onBlur={formik.handleBlur}
-              helpText="Upload one or more files. Minimum: 1."
             />
           </div>
 
-          {/* TODO: exterior slot temporarily disabled */}
-          {/* <div className="w-full rounded-lg border border-border/50 bg-background/70 p-3">
-            <ImageFilesField
-              id="exterierData"
-              label="Exterior data"
-              files={formik.values.exterierData}
-              onFilesChange={handleFilesChange('exterierData')}
-              error={exterierTouched || showAfterSubmit ? exterierError : undefined}
-              onBlur={formik.handleBlur}
-              helpText="Upload one or more files. Minimum: 1."
-            />
-          </div> */}
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border/50">
           <Button
             type="button"
             variant="outline"
