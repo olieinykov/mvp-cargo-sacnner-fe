@@ -11,13 +11,19 @@ export const Table: React.FC<TableProps> = ({ className, ...props }) => (
 type TableHeadProps = React.ThHTMLAttributes<HTMLTableCellElement>;
 export const TableHead: React.FC<TableHeadProps> = ({
   className,
+  style,
   ...props
 }) => (
   <th
     className={cn(
-      "sticky top-0 z-10 bg-muted px-4 py-2 text-xs font-medium text-muted-foreground/90",
+      "sticky top-0 z-20 border-b border-primary/15 px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-primary/60",
       className,
     )}
+    style={{
+      backgroundColor: "hsl(var(--background))",
+      backgroundImage: "linear-gradient(hsl(var(--primary) / 0.07), hsl(var(--primary) / 0.07))",
+      ...style,
+    }}
     {...props}
   />
 );
@@ -25,7 +31,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
 type TableRowProps = React.HTMLAttributes<HTMLTableRowElement>;
 export const TableRow: React.FC<TableRowProps> = ({ className, ...props }) => (
   <tr
-    className={cn("border-b border-border last:border-0", className)}
+    className={cn("border-b border-border/40 last:border-0 transition-colors duration-100", className)}
     {...props}
   />
 );
@@ -34,4 +40,4 @@ type TableCellProps = React.TdHTMLAttributes<HTMLTableCellElement>;
 export const TableCell: React.FC<TableCellProps> = ({
   className,
   ...props
-}) => <td className={cn("px-4 py-2 align-middle", className)} {...props} />;
+}) => <td className={cn("px-4 py-3.5 align-middle", className)} {...props} />;

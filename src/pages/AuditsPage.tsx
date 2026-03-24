@@ -1,4 +1,5 @@
 import React from "react";
+import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { AuditsTable } from "../components/audits/AuditsTable";
@@ -10,7 +11,7 @@ import type {
   ServerAuditResponse,
 } from "../lib/utils/useAuditStore";
 
-// ─── Rows-per-page custom input ────────────────────────────────────────────────
+// ─── Rows-per-page custom select ───────────────────────────────────────────────
 
 const LIMIT_PRESETS = [10, 20, 50, 100];
 
@@ -23,116 +24,92 @@ function LimitControl({
   onChange: (n: number) => void;
   disabled: boolean;
 }) {
-  const [inputVal, setInputVal] = React.useState(String(value));
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
-  // sync if external value changes
-  React.useEffect(() => {
-    setInputVal(String(value));
-  }, [value]);
-
-  // close dropdown on outside click
   React.useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, [open]);
 
-  const commit = (raw: string) => {
-    const n = parseInt(raw, 10);
-    if (!isNaN(n) && n > 0) {
-      onChange(Math.min(n, 100));
-      setInputVal(String(Math.min(n, 100)));
-    } else {
-      setInputVal(String(value));
-    }
+  const handleSelect = (opt: number) => {
+    onChange(opt);
+    setOpen(false);
   };
 
   return (
-    <div ref={ref} className="relative flex items-center gap-1.5">
-      <span className="text-sm text-muted-foreground">Rows per page</span>
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground">Rows per page</span>
 
-      <div className="flex items-center">
-        {/* Input */}
-        <input
-          type="number"
-          min={1}
-          max={100}
-          value={inputVal}
-          disabled={disabled}
-          onChange={(e) => setInputVal(e.target.value)}
-          onBlur={(e) => commit(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") commit((e.target as HTMLInputElement).value);
-          }}
-          className="h-8 w-[60px] rounded-l-md border border-r-0 border-input bg-background px-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 z-10"
-          aria-label="Rows per page"
-        />
-
-        {/* Chevron toggle */}
+      <div ref={ref} className="relative">
         <button
           type="button"
           disabled={disabled}
           onClick={() => setOpen((o) => !o)}
-          className="flex h-8 items-center rounded-r-md border border-input bg-background px-1.5 text-muted-foreground transition-colors hover:bg-muted focus:outline-none disabled:opacity-50"
-          aria-label="Open rows per page presets"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-label="Rows per page"
+          className="flex h-8 min-w-[64px] items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40"
         >
+          <span>{value}</span>
           <svg
-            width="14"
-            height="14"
-            viewBox="0 0 14 14"
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
             fill="none"
-            className={`transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+            aria-hidden="true"
+            className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           >
-            <path
-              d="M3 5l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+            <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-      </div>
 
-      {open && (
-        <div className="absolute bottom-full right-0 z-50 mb-1.5 min-w-[80px] overflow-hidden rounded-lg border border-border bg-background shadow-lg">
-          {LIMIT_PRESETS.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => {
-                onChange(opt);
-                setInputVal(String(opt));
-                setOpen(false);
-              }}
-              className={`flex w-full items-center justify-between px-3 py-1.5 text-sm transition-colors hover:bg-muted ${
-                opt === value
-                  ? "font-semibold text-foreground"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {opt}
-              {opt === value && (
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M2 6l3 3 5-5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+        {open && (
+          <div
+            role="listbox"
+            aria-label="Rows per page options"
+            className="absolute bottom-full right-0 z-50 mb-2 overflow-hidden rounded-xl border border-border bg-background shadow-lg ring-1 ring-black/5"
+          >
+            <div className="p-1">
+              {LIMIT_PRESETS.map((opt) => {
+                const isSelected = opt === value;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => handleSelect(opt)}
+                    className={`flex w-full items-center justify-between gap-4 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      isSelected
+                        ? "bg-primary/10 font-semibold text-primary"
+                        : "text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {isSelected && (
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                        <path d="M2 6.5l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -154,7 +131,6 @@ function Pagination({
   disabled: boolean;
   onPageChange: (p: number) => void;
 }) {
-  // Build visible page numbers with ellipsis
   const pages = React.useMemo(() => {
     if (totalPages <= 7)
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -164,44 +140,35 @@ function Pagination({
     };
     result.push(1);
     if (page > 4) result.push("…");
-    const start = Math.max(2, page - 2);
-    const end = Math.min(totalPages - 1, page + 2);
-    addRange(start, end);
+    addRange(Math.max(2, page - 2), Math.min(totalPages - 1, page + 2));
     if (page < totalPages - 3) result.push("…");
     result.push(totalPages);
     return result;
   }, [page, totalPages]);
 
   return (
-    <div className="flex items-center gap-1">
-      {/* Prev */}
+    <nav className="flex items-center gap-1" aria-label="Pagination">
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}
         disabled={!hasPrev || disabled}
-        className="flex h-8 items-center gap-1 rounded-md border border-input bg-background px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+        aria-label="Previous page"
+        className="flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path
-            d="M9 11L5 7l4-4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        Previous
+        Prev
       </button>
 
-      {/* Page numbers */}
       <div className="flex items-center gap-0.5">
         {pages.map((p, i) =>
           p === "…" ? (
             <span
               key={`ellipsis-${i}`}
-              className="flex h-8 w-8 items-center justify-center text-sm text-muted-foreground"
+              className="flex h-9 w-9 items-center justify-center text-sm text-muted-foreground/50"
             >
-              …
+              ···
             </span>
           ) : (
             <button
@@ -209,10 +176,12 @@ function Pagination({
               type="button"
               onClick={() => onPageChange(p as number)}
               disabled={disabled}
-              className={`flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-40 ${
+              aria-label={`Page ${p}`}
+              aria-current={p === page ? "page" : undefined}
+              className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-40 ${
                 p === page
-                  ? "bg-foreground text-background"
-                  : "border border-input bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
               {p}
@@ -221,25 +190,19 @@ function Pagination({
         )}
       </div>
 
-      {/* Next */}
       <button
         type="button"
         onClick={() => onPageChange(page + 1)}
         disabled={!hasNext || disabled}
-        className="flex h-8 items-center gap-1 rounded-md border border-input bg-background px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+        aria-label="Next page"
+        className="flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
       >
         Next
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path
-            d="M5 3l4 4-4 4"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-    </div>
+    </nav>
   );
 }
 
@@ -268,6 +231,16 @@ export const AuditsPage: React.FC = () => {
       const stored = addAudit(response);
       setIsCreateOpen(false);
       setResultAudit(stored);
+      const { audit: result } = response;
+      if (result.is_passed) {
+        toast.success('Audit passed', {
+          description: `Score ${result.score}/100 — no critical or major issues found.`,
+        });
+      } else {
+        toast.error('Audit failed', {
+          description: `Score ${result.score}/100 — ${result.counts.critical} critical, ${result.counts.major} major issue${result.counts.major !== 1 ? 's' : ''}.`,
+        });
+      }
     },
     [addAudit],
   );
@@ -303,31 +276,35 @@ export const AuditsPage: React.FC = () => {
 
         <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
           {error ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              Failed to load audits: {error}
+            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 ring-1 ring-inset ring-red-600/10">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0 text-red-500" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-red-800">Failed to load audits</p>
+                <p className="mt-0.5 text-xs text-red-700">{error}</p>
+              </div>
             </div>
           ) : (
             <>
-              {/* Fixed rounded border; only inner content scrolls (border does not move / clip corners) */}
               <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-background">
-                <div className="h-full max-h-full overflow-y-auto overscroll-y-contain">
+                <div className="h-full max-h-full overflow-auto overscroll-contain">
                   <AuditsTable
                     audits={audits}
                     loading={loading}
                     onRowClick={(audit) => setResultAudit(audit)}
+                    onCreateClick={() => setIsCreateOpen(true)}
                   />
                 </div>
               </div>
 
-              {/* Pagination + limit bar */}
               {pagination && (
-                <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 pt-3">
-                  {/* Left: total info */}
-                  <span className="text-sm text-muted-foreground">
-                    {pagination.total} Audits
+                <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-border/40 pt-3 min-w-0">
+                  <span className="text-xs text-muted-foreground">
+                    <span className="font-semibold text-foreground">{pagination.total}</span> audits total
                   </span>
 
-                  {/* Center: page numbers */}
                   {pagination.totalPages > 1 && (
                     <Pagination
                       page={page}
@@ -339,7 +316,6 @@ export const AuditsPage: React.FC = () => {
                     />
                   )}
 
-                  {/* Right: rows per page */}
                   <LimitControl
                     value={limit}
                     onChange={changeLimit}

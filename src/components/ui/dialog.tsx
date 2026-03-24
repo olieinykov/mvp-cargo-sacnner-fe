@@ -31,36 +31,47 @@ export const Modal: React.FC<ModalProps> = ({
 }) => (
   <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-black/30" />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
+      <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
         <DialogPrimitive.Content
           className={cn(
-            'flex w-full flex-col overflow-hidden rounded-xl border border-border bg-background p-0 shadow-lg outline-none ring-1 ring-border/40',
+            'flex w-full flex-col overflow-hidden bg-background p-0 shadow-2xl outline-none',
+            'rounded-t-2xl border border-border/60 sm:rounded-2xl',
+            'max-h-[92dvh] sm:max-h-[min(90vh,calc(100vh-2rem))]',
             maxWidthClassName,
-            'max-h-[min(90vh,calc(100vh-2rem))]',
           )}
         >
-          <div className="shrink-0 border-b border-border px-6 py-4">
-            <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
-              {title}
-            </DialogPrimitive.Title>
-            {description ? (
-              <DialogPrimitive.Description className="mt-1.5 text-sm text-muted-foreground">
-                {description}
-              </DialogPrimitive.Description>
-            ) : (
-              <DialogPrimitive.Description className="sr-only">
-                Dialog content.
-              </DialogPrimitive.Description>
-            )}
+          <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border/60 px-6 py-4">
+            <div className="min-w-0 flex-1">
+              <DialogPrimitive.Title className="text-base font-semibold leading-none tracking-tight">
+                {title}
+              </DialogPrimitive.Title>
+              {description ? (
+                <DialogPrimitive.Description className="mt-1.5 text-sm text-muted-foreground">
+                  {description}
+                </DialogPrimitive.Description>
+              ) : (
+                <DialogPrimitive.Description className="sr-only">
+                  Dialog content.
+                </DialogPrimitive.Description>
+              )}
+            </div>
+            <DialogPrimitive.Close
+              className="shrink-0 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Close dialog"
+            >
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                <path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </DialogPrimitive.Close>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-4">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">
             {children}
           </div>
 
           {footer ? (
-            <div className="shrink-0 border-t border-border px-6 py-4">
+            <div className="shrink-0 border-t border-border/60 px-6 py-4">
               <div className="flex flex-wrap items-center justify-end gap-2">{footer}</div>
             </div>
           ) : null}
