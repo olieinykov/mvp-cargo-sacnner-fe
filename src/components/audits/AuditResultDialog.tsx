@@ -205,22 +205,29 @@ function SlotPanel({ slots }: { slots: SlotResult[] }) {
         if (!fields.length) return null;
 
         const rawValues = fields.map((f) => f.mainValue);
-        const displayParts = rawValues.map((mv) =>
-          mv === null ? '—' : typeof mv === 'boolean' ? (mv ? 'Yes' : 'No') : String(mv),
-        );
-        const uniqueParts = [...new Set(displayParts)];
-        const displayValue = uniqueParts.join(' · ');
 
-        const boolValues = rawValues.filter((v) => typeof v === 'boolean') as boolean[];
+        // Merge strategy across multiple objects (pages / entries of the same document):
+        //   booleans → true wins (confirmed on any entry = confirmed overall)
+        //   everything else → all unique non-null values joined with ', '
+        //   all-null → null
+        const bestValue = (() => {
+          const nonNull = rawValues.filter((v) => v !== null);
+          if (nonNull.length === 0) return null;
+          const bools = nonNull.filter((v) => typeof v === 'boolean') as boolean[];
+          if (bools.length === nonNull.length) return bools.some(Boolean);
+          const unique = [...new Set(nonNull.map((v) => String(v).trim()))];
+          return unique.join(', ');
+        })();
+        const displayValue =
+          bestValue === null ? '—'
+          : typeof bestValue === 'boolean' ? (bestValue ? 'Yes' : 'No')
+          : String(bestValue);
+
         const valueColor =
-          boolValues.length > 0
-            ? boolValues.every(Boolean)
-              ? 'text-emerald-600'
-              : boolValues.some(Boolean)
-              ? 'text-amber-600'
-              : 'text-red-500'
-            : rawValues.every((v) => v === null)
+          bestValue === null
             ? 'text-muted-foreground/50'
+            : typeof bestValue === 'boolean'
+            ? bestValue ? 'text-emerald-600' : 'text-red-500'
             : 'text-foreground';
 
         const meanings = fields
