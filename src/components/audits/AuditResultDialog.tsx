@@ -166,9 +166,6 @@ function SlotPanel({ slots }: { slots: SlotResult[] }) {
           />
         </div>
         <span className="shrink-0 tabular-nums text-xs font-semibold text-foreground">{avgConfidence}%</span>
-        {slots.length > 1 && (
-          <span className="shrink-0 text-xs text-muted-foreground">avg · {slots.length} images</span>
-        )}
       </div>
 
       {allKeys.map((key) => {
@@ -210,24 +207,30 @@ function SlotPanel({ slots }: { slots: SlotResult[] }) {
         //   booleans → true wins (confirmed on any entry = confirmed overall)
         //   everything else → all unique non-null values joined with ', '
         //   all-null → null
-        const bestValue = (() => {
-          const nonNull = rawValues.filter((v) => v !== null);
+        const nonNull = rawValues.filter((v) => v !== null);
+        const isBoolField = nonNull.length > 0 && nonNull.every((v) => typeof v === 'boolean');
+
+        // For multi-value string fields: split by ; or ,, normalize (strip leading +), dedup, restore best format
+        const valueTokens: string[] | null = (() => {
           if (nonNull.length === 0) return null;
-          const bools = nonNull.filter((v) => typeof v === 'boolean') as boolean[];
-          if (bools.length === nonNull.length) return bools.some(Boolean);
-          const unique = [...new Set(nonNull.map((v) => String(v).trim()))];
-          return unique.join(', ');
+          if (isBoolField) return [(nonNull as boolean[]).some(Boolean) ? 'Yes' : 'No'];
+          const parts = nonNull.flatMap((v) =>
+            String(v).split(/[;,]+/).map((s) => s.trim()).filter(Boolean)
+          );
+          // Dedup by normalized key: strip leading +, collapse spaces
+          const seen = new Map<string, string>();
+          for (const part of parts) {
+            const normalized = part.replace(/^\+/, '').replace(/\s+/g, '').toLowerCase();
+            if (!seen.has(normalized)) seen.set(normalized, part);
+          }
+          return [...seen.values()];
         })();
-        const displayValue =
-          bestValue === null ? '—'
-          : typeof bestValue === 'boolean' ? (bestValue ? 'Yes' : 'No')
-          : String(bestValue);
 
         const valueColor =
-          bestValue === null
+          valueTokens === null
             ? 'text-muted-foreground/50'
-            : typeof bestValue === 'boolean'
-            ? bestValue ? 'text-emerald-600' : 'text-red-500'
+            : isBoolField
+            ? valueTokens[0] === 'Yes' ? 'text-emerald-600' : 'text-red-500'
             : 'text-foreground';
 
         const meanings = fields
@@ -236,6 +239,7 @@ function SlotPanel({ slots }: { slots: SlotResult[] }) {
         const uniqueMeanings = [...new Set(meanings)];
 
         const formattedKey = key.replace(/([A-Z])/g, ' $1').trim();
+        const isMultiToken = valueTokens && valueTokens.length > 1;
 
         return (
           <div
@@ -252,9 +256,26 @@ function SlotPanel({ slots }: { slots: SlotResult[] }) {
                 </div>
               )}
             </div>
-            <span className={`shrink-0 text-xs font-semibold tabular-nums ${valueColor}`}>
-              {displayValue}
-            </span>
+            {valueTokens === null ? (
+              <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground/50">—</span>
+            ) : isMultiToken ? (
+             <div className="flex flex-wrap justify-end gap-1 max-w-[55%]">
+                {valueTokens.map((token, i) => (
+                  <>
+                    <span className={`text-xs font-medium tabular-nums ${valueColor}`}>
+                      {token}
+                    </span>
+                    {i < valueTokens.length - 1 && (
+                      <span className="text-xs font-medium tabular-nums ${valueColor}">;</span>
+                    )}
+                  </>
+                ))}
+              </div>
+            ) : (
+              <span className={`shrink-0 text-xs font-semibold tabular-nums ${valueColor}`}>
+                {valueTokens[0]}
+              </span>
+            )}
           </div>
         );
       })}
@@ -360,7 +381,8 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
       </div>
 
       {/* ── Tab switcher ── */}
-      <div className="mb-4 flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
+      <div className="sticky top-[-10px] z-10 mb-4 -mx-1 px-1 pb-1 bg-background/95 backdrop-blur">
+      <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
         {(
           [
             { key: 'issues',  label: 'Issues', count: validIssueCount },
@@ -387,6 +409,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
             )}
           </button>
         ))}
+      </div>
       </div>
 
       {/* ── Issues tab ── */}
@@ -425,25 +448,27 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
 
       {/* ── Details tab ── */}
       {activeTab === 'details' && (
-        <div className="space-y-3">
-          <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
-            {SLOT_TABS.map(({ key, label }) => {
-              const count = slotData[key].length;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setActiveSlot(key)}
-                  className={`flex-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    activeSlot === key
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  {label}{count > 1 ? ` · ${count}` : ''}
-                </button>
-              );
-            })}
+        <div>
+          {/* Sticky slot tab switcher */}
+          <div className="sticky top-[42px] z-10 -mx-1 px-1 pb-3 bg-background/95 backdrop-blur">
+            <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
+              {SLOT_TABS.map(({ key, label }) => {
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setActiveSlot(key)}
+                    className={`flex-1 rounded-lg px-2 py-2 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                      activeSlot === key
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="rounded-xl border border-border/40 bg-background p-4">
