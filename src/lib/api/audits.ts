@@ -57,21 +57,10 @@ export const useAuditsQuery = (page: number, limit: number) =>
 
 // ─── POST create audit ─────────────────────────────────────────────────────────
 
+// All images are sent in a single "images" field.
+// The backend (Claude) auto-classifies each image as BOL / placard / interior.
 export type AuditFilesPayload = {
-  bolData: File[];
-  placardData: File[];
-  intrierData: File[];
-  //exterierData: File[];
-};
-
-const appendFilesToFormData = (
-  formData: FormData,
-  key: string,
-  files: File[],
-) => {
-  files.forEach((file) => {
-    formData.append(key, file);
-  });
+  images: File[];
 };
 
 const createAuditRequest = async (
@@ -79,10 +68,9 @@ const createAuditRequest = async (
 ): Promise<ServerAuditResponse> => {
   const formData = new FormData();
 
-  appendFilesToFormData(formData, "bol", payload.bolData);
-  appendFilesToFormData(formData, "placard", payload.placardData);
-  appendFilesToFormData(formData, "intrier", payload.intrierData);
-  //appendFilesToFormData(formData, 'exterier', payload.exterierData);
+  payload.images.forEach((file) => {
+    formData.append("images", file);
+  });
 
   const response = await fetch(AUDIT_ENDPOINT, {
     method: "POST",
