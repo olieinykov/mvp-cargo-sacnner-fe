@@ -56,8 +56,20 @@ export type ServerAuditResponse = {
   bol: SlotResult;
   marker: SlotResult;
   cargo: SlotResult;
-  //exterier: SlotResult;
   audit: AuditResult;
+  /** Populated by POST /audit — images with their detected slot type */
+  auditImages?: AuditImage[];
+};
+
+// ─── Audit image ───────────────────────────────────────────────────────────────
+
+/** Slot types that an image can belong to */
+export type AuditImageType = 'bol' | 'placard' | 'cargo';
+
+export type AuditImage = {
+  url: string;
+  /** Which section this image was classified into by Claude */
+  type: AuditImageType;
 };
 
 // ─── Stored record ─────────────────────────────────────────────────────────────
@@ -66,6 +78,8 @@ export type StoredAudit = {
   id: string;
   createdAt: string;
   response: ServerAuditResponse;
+  /** Images uploaded for this audit, tagged by their detected slot type */
+  auditImages: AuditImage[];
 };
 
 // ─── Hook ──────────────────────────────────────────────────────────────────────
@@ -78,15 +92,15 @@ export function useAuditStore() {
 
   const { data, isLoading: loading, error } = useAuditsQuery(page, limit);
 
-  const audits: StoredAudit[]   = data?.audits     ?? [];
+  const audits: StoredAudit[]            = data?.audits     ?? [];
   const pagination: Pagination | undefined = data?.pagination;
 
-  // После POST — инвалидируем кеш чтобы подтянуть актуальные данные
   const addAudit = useCallback((response: ServerAuditResponse): StoredAudit => {
     const record: StoredAudit = {
-      id:        response.id ?? crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
+      id:          response.id ?? crypto.randomUUID(),
+      createdAt:   new Date().toISOString(),
       response,
+      auditImages: response.auditImages ?? [],
     };
     queryClient.invalidateQueries({ queryKey: ['audits'] });
     return record;

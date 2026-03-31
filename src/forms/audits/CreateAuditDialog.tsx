@@ -3,7 +3,10 @@ import { useFormik } from "formik";
 import { z } from "zod";
 import { Modal } from "../../components/ui/dialog";
 import { Button } from "../../components/ui/button";
-import { useCreateAuditMutation } from "../../lib/api/audits";
+import {
+  useUploadImagesMutation,
+  useCreateAuditMutation,
+} from "../../lib/api/audits";
 import { ImageFilesField } from "./ImageFilesField";
 import type { ServerAuditResponse } from "../../lib/utils/useAuditStore";
 
@@ -25,8 +28,14 @@ type CreateAuditDialogProps = {
 
 const CREATE_AUDIT_FORM_ID = "create-audit-form";
 
-const initialValues: AuditFormValues = {
-  images: [],
+const initialValues: AuditFormValues = { images: [] };
+
+type Step = "idle" | "uploading" | "analyzing";
+
+const STEP_LABEL: Record<Step, string> = {
+  idle:      "Run Audit",
+  uploading: "Uploading…",
+  analyzing: "Analyzing…",
 };
 
 export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
@@ -34,7 +43,16 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   handleClose,
   onAuditCreated,
 }) => {
+  const uploadMutation = useUploadImagesMutation();
   const createAuditMutation = useCreateAuditMutation();
+
+  const isPending = uploadMutation.isPending || createAuditMutation.isPending;
+
+  const currentStep: Step = uploadMutation.isPending
+    ? "uploading"
+    : createAuditMutation.isPending
+      ? "analyzing"
+      : "idle";
 
   const formik = useFormik<AuditFormValues>({
     initialValues,
@@ -49,7 +67,13 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
     },
     onSubmit: async (values, helpers) => {
       try {
-        const response = await createAuditMutation.mutateAsync(values);
+        // Step 1 — upload files to Supabase Storage
+        const uploaded = await uploadMutation.mutateAsync(values.images);
+
+        // Step 2 — run audit by passing back the storage IDs
+        const imageIds = uploaded.map((img) => img.id);
+        const response = await createAuditMutation.mutateAsync({ imageIds });
+
         helpers.resetForm();
         onAuditCreated(response);
       } catch (error) {
@@ -60,11 +84,10 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
 
   if (!open) return null;
 
-  const showError = formik.submitCount > 0 || Boolean(formik.touched.images);
-  const imageError =
-    typeof formik.errors.images === "string"
-      ? formik.errors.images
-      : undefined;
+  const showError  = formik.submitCount > 0 || Boolean(formik.touched.images);
+  const imageError = typeof formik.errors.images === "string"
+    ? formik.errors.images
+    : undefined;
 
   const count = formik.values.images.length;
 
@@ -84,7 +107,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
             type="button"
             variant="outline"
             onClick={handleClose}
-            disabled={createAuditMutation.isPending}
+            disabled={isPending}
             aria-label="Cancel create audit"
           >
             Cancel
@@ -93,10 +116,10 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
             type="submit"
             form={CREATE_AUDIT_FORM_ID}
             aria-label="Submit create audit form"
-            disabled={createAuditMutation.isPending}
+            disabled={isPending}
             className="min-w-[100px]"
           >
-            {createAuditMutation.isPending ? (
+            {isPending ? (
               <span className="flex items-center gap-2">
                 <svg
                   className="h-3.5 w-3.5 animate-spin"
@@ -118,17 +141,16 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
                     d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                   />
                 </svg>
-                Analyzing…
+                {STEP_LABEL[currentStep]}
               </span>
             ) : (
-              "Run Audit"
+              STEP_LABEL.idle
             )}
           </Button>
         </>
       }
     >
       <form id={CREATE_AUDIT_FORM_ID} onSubmit={formik.handleSubmit}>
-
         <ImageFilesField
           id="images"
           label="Shipment images"
