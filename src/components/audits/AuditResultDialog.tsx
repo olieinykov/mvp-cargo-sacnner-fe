@@ -381,6 +381,11 @@ function SlotPanel({
         const valueTokens: string[] | null = (() => {
           if (nonNull.length === 0) return null;
           if (isBoolField) return [(nonNull as boolean[]).some(Boolean) ? 'Yes' : 'No'];
+          if (key === 'properShippingName') {
+            const seen = new Set<string>();
+            nonNull.forEach(v => seen.add(String(v).trim()));
+            return [...seen];
+          }
           const parts = nonNull.flatMap((v) =>
             String(v).split(/[;,]+/).map((s) => s.trim()).filter(Boolean)
           );
@@ -436,7 +441,7 @@ function SlotPanel({
                 ))}
               </div>
             ) : (
-              <span className={`shrink-0 text-xs font-semibold tabular-nums ${valueColor}`}>
+              <span className={`text-xs font-semibold text-right max-w-[60%] break-words ${valueColor} ${key !== 'properShippingName' ? 'shrink-0 tabular-nums' : ''}`}>
                 {valueTokens[0]}
               </span>
             )}
