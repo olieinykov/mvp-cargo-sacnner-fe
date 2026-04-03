@@ -4,6 +4,15 @@ import type { ServerAuditResponse, StoredAudit, AuditImage } from "../utils/useA
 const AUDIT_ENDPOINT        = 'http://localhost:3000/api/v1/audit';
 const AUDIT_UPLOAD_ENDPOINT = `${AUDIT_ENDPOINT}/upload`;
 
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+function authHeaders(): HeadersInit {
+  const token = localStorage.getItem('accessToken');
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 // ─── GET all audits ────────────────────────────────────────────────────────────
 
 type PaginatedResponse = {
@@ -28,12 +37,15 @@ export type Pagination = PaginatedResponse["pagination"];
 const fetchAudits = async (
   page: number,
   limit: number,
+  auditorId: string
 ): Promise<{ audits: StoredAudit[]; pagination: Pagination }> => {
   const url = new URL(AUDIT_ENDPOINT);
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
-
-  const response = await fetch(url.toString());
+  url.searchParams.set("auditorId", auditorId);
+  const response = await fetch(url.toString(), {
+    headers: authHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to fetch audits");
@@ -52,18 +64,17 @@ const fetchAudits = async (
   };
 };
 
-export const useAuditsQuery = (page: number, limit: number) =>
+export const useAuditsQuery = (page: number, limit: number, auditorId: string) =>
   useQuery({
     queryKey: ["audits", page, limit],
-    queryFn: () => fetchAudits(page, limit),
+    queryFn: () => fetchAudits(page, limit, auditorId),
+    enabled: !!auditorId
   });
 
 // ─── POST /audit/upload ────────────────────────────────────────────────────────
 
 export type UploadedImage = {
-  /** Supabase storage key — pass back to POST /audit as imageIds[] */
   id: string;
-  /** Public URL of the uploaded image */
   url: string;
 };
 
@@ -73,6 +84,7 @@ const uploadImages = async (files: File[]): Promise<UploadedImage[]> => {
 
   const response = await fetch(AUDIT_UPLOAD_ENDPOINT, {
     method: "POST",
+    headers: authHeaders(),   // no Content-Type — browser sets multipart boundary
     body: formData,
   });
 
@@ -90,8 +102,8 @@ export const useUploadImagesMutation = () =>
 // ─── POST /audit ───────────────────────────────────────────────────────────────
 
 export type AuditPayload = {
-  /** Storage IDs returned by POST /audit/upload */
   imageIds: string[];
+  auditorId: string;
 };
 
 const createAuditRequest = async (
@@ -99,7 +111,10 @@ const createAuditRequest = async (
 ): Promise<ServerAuditResponse> => {
   const response = await fetch(AUDIT_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+    },
     body: JSON.stringify(payload),
   });
 

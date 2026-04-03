@@ -2,55 +2,26 @@ import React, { useContext } from 'react';
 import { ThemeContext } from '../theme/ThemeProvider';
 import { Button } from '../ui/button';
 import { cn } from '../../lib/utils/cn';
+import { useAuthStore } from '../../lib/utils/useAuthStore';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 type SidebarProps = {
   className?: string;
 };
 
-const ThemeIcon: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) => {
-  if (theme === 'light') {
-    return (
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path
-          d="M21 14.5C19.6 15.2 18 15.6 16.3 15.6C10.9 15.6 6.6 11.3 6.6 5.9C6.6 4.2 7 2.6 7.7 1.2C3.7 2.4 1 6.2 1 10.6C1 16 5.3 20.3 10.7 20.3C15.1 20.3 18.9 17.6 21 14.5Z"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
+// ─── Icons ─────────────────────────────────────────────────────────────────────
 
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+const ThemeIcon: React.FC<{ theme: 'light' | 'dark' }> = ({ theme }) =>
+  theme === 'light' ? (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M21 14.5C19.6 15.2 18 15.6 16.3 15.6C10.9 15.6 6.6 11.3 6.6 5.9C6.6 4.2 7 2.6 7.7 1.2C3.7 2.4 1 6.2 1 10.6C1 16 5.3 20.3 10.7 20.3C15.1 20.3 18.9 17.6 21 14.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
-};
 
 const AuditsIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -60,8 +31,65 @@ const AuditsIcon: React.FC = () => (
   </svg>
 );
 
+const UsersIcon: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const LogoutIcon: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// ─── Nav item ──────────────────────────────────────────────────────────────────
+
+function NavItem({
+  icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      aria-current={active ? 'page' : undefined}
+      className={cn(
+        'group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+        active
+          ? 'bg-primary/10 text-primary'
+          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+// ─── Sidebar ───────────────────────────────────────────────────────────────────
+
 export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const themeContext = useContext(ThemeContext);
+  const { isAdmin, user, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/sign-in', { replace: true });
+  };
 
   return (
     <aside
@@ -85,20 +113,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
       {/* Nav */}
       <nav className="flex-1 space-y-0.5" aria-label="Main navigation">
-        <button
-          type="button"
-          className="group flex w-full items-center gap-2.5 rounded-lg bg-primary/10 px-3 py-2 text-sm font-medium text-primary"
-          aria-label="Audits"
-          aria-current="page"
-        >
-          <AuditsIcon />
-          Audits
-        </button>
+        <NavItem
+          icon={<AuditsIcon />}
+          label="Audits"
+          active={pathname === '/audits'}
+          onClick={() => navigate('/audits')}
+        />
+        {isAdmin && (
+          <NavItem
+            icon={<UsersIcon />}
+            label="Team"
+            active={pathname === '/users'}
+            onClick={() => navigate('/users')}
+          />
+        )}
       </nav>
 
-      {/* Footer: theme toggle */}
-      {themeContext ? (
-        <div className="mt-auto border-t border-border/40 pt-3">
+      {/* Footer */}
+      <div className="mt-auto space-y-0.5 border-t border-border/40 pt-3">
+        {/* User info chip */}
+        {user && (
+          <div className="flex items-center gap-2.5 rounded-lg px-3 py-2">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+              {user.firstName[0]}{user.lastName[0]}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-xs font-medium text-foreground">
+                {user.firstName} {user.lastName}
+              </p>
+              <p className="truncate text-[11px] capitalize text-muted-foreground">{user.role}</p>
+            </div>
+          </div>
+        )}
+
+        {themeContext && (
           <Button
             type="button"
             variant="ghost"
@@ -112,8 +160,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               {themeContext.theme === 'light' ? 'Dark mode' : 'Light mode'}
             </span>
           </Button>
-        </div>
-      ) : null}
+        )}
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          aria-label="Log out"
+          className="h-9 w-full justify-start gap-2.5 rounded-lg px-3 text-muted-foreground hover:text-foreground"
+        >
+          <LogoutIcon />
+          <span className="text-sm font-normal">Log out</span>
+        </Button>
+      </div>
     </aside>
   );
 };

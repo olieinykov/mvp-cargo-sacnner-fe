@@ -10,6 +10,7 @@ import type {
   StoredAudit,
   ServerAuditResponse,
 } from "../lib/utils/useAuditStore";
+import { useAuthStore } from "../lib/utils/useAuthStore";
 
 // ─── Rows-per-page custom select ───────────────────────────────────────────────
 
@@ -209,6 +210,8 @@ function Pagination({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export const AuditsPage: React.FC = () => {
+  const { user } = useAuthStore();
+  const auditorId = user?.companyId ?? "";
   const {
     audits,
     loading,
@@ -219,7 +222,7 @@ export const AuditsPage: React.FC = () => {
     setPage,
     changeLimit,
     addAudit,
-  } = useAuditStore();
+  } = useAuditStore(auditorId);
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
   const [resultAudit, setResultAudit] = React.useState<StoredAudit | null>(

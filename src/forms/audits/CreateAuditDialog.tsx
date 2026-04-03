@@ -9,6 +9,7 @@ import {
 } from "../../lib/api/audits";
 import { ImageFilesField } from "./ImageFilesField";
 import type { ServerAuditResponse } from "../../lib/utils/useAuditStore";
+import { useAuthStore } from "../../lib/utils/useAuthStore";
 
 const fileSchema = z.instanceof(File);
 
@@ -43,6 +44,8 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   handleClose,
   onAuditCreated,
 }) => {
+  const { user } = useAuthStore();
+  const auditorId = user?.companyId ?? "";
   const uploadMutation = useUploadImagesMutation();
   const createAuditMutation = useCreateAuditMutation();
 
@@ -72,7 +75,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
 
         // Step 2 — run audit by passing back the storage IDs
         const imageIds = uploaded.map((img) => img.id);
-        const response = await createAuditMutation.mutateAsync({ imageIds });
+        const response = await createAuditMutation.mutateAsync({ imageIds, auditorId });
 
         helpers.resetForm();
         onAuditCreated(response);

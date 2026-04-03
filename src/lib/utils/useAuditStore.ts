@@ -84,13 +84,13 @@ export type StoredAudit = {
 
 // ─── Hook ──────────────────────────────────────────────────────────────────────
 
-export function useAuditStore() {
+export function useAuditStore(auditorId: string) {
   const queryClient = useQueryClient();
 
   const [page,  setPage]  = useState(1);
   const [limit, setLimit] = useState(20);
 
-  const { data, isLoading: loading, error } = useAuditsQuery(page, limit);
+  const { data, isLoading: loading, error } = useAuditsQuery(page, limit, auditorId);
 
   const audits: StoredAudit[]            = data?.audits     ?? [];
   const pagination: Pagination | undefined = data?.pagination;
