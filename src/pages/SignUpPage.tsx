@@ -90,7 +90,6 @@ export const SignUpPage: React.FC = () => {
         // (or you can auto-login by calling signIn after signUp)
         '',
         data.user,
-        data.company,
       );
       toast.success('Company registered! Please sign in.');
       navigate('/sign-in');

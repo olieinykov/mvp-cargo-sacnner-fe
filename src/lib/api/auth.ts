@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-const BASE = 'http://localhost:3000/api/v1/auth';
+const BASE = `${import.meta.env.VITE_API_URL}/auth`;
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -111,7 +111,7 @@ export async function signIn(payload: SignInPayload): Promise<SignInResponse> {
 }
 
 export async function signUpAdmin(payload: SignUpAdminPayload): Promise<SignUpResponse> {
-  const res = await fetch(`${BASE}/signUp`, {
+  const res = await fetch(`${BASE}/signUp-admin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -120,7 +120,7 @@ export async function signUpAdmin(payload: SignUpAdminPayload): Promise<SignUpRe
 }
 
 export async function signUpInvited(payload: SignUpInvitedPayload): Promise<SignUpResponse> {
-  const res = await fetch(`${BASE}/signUp`, {
+  const res = await fetch(`${BASE}/signUp-invite`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
