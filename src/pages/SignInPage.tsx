@@ -22,7 +22,12 @@ export const SignInPage: React.FC = () => {
       toast.success('Welcome back!');
       navigate('/audits');
     } catch (err) {
-      toast.error((err as Error).message ?? 'Sign-in failed');
+      const message = (err as Error).message ?? 'Sign-in failed';
+      if (message === 'EMAIL_NOT_CONFIRMED') {
+        toast.error('Please confirm your email before signing in. Check your inbox.');
+      } else {
+        toast.error(message);
+      }
     }
   };
 

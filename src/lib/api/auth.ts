@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+//const BASE = `http://localhost:3000/api/v1/auth`;
 const BASE = `${import.meta.env.VITE_API_URL}/auth`;
 
 // ─── Types ─────────────────────────────────────────────────────────────────────

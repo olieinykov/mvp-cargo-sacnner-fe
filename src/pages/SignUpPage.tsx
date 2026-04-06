@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useSignUpAdminMutation } from '../lib/api/auth';
-import { useAuthStore } from '../lib/utils/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
 type FormState = {
@@ -47,11 +46,11 @@ const inputCls =
   'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none ring-offset-background transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50';
 
 export const SignUpPage: React.FC = () => {
-  const { login } = useAuthStore();
   const mutation = useSignUpAdminMutation();
   const [form, setForm] = useState<FormState>(INIT);
   const [showPwd, setShowPwd] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const navigate = useNavigate()
 
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -74,7 +73,7 @@ export const SignUpPage: React.FC = () => {
     e.preventDefault();
     if (!validate()) return;
     try {
-      const data = await mutation.mutateAsync({
+      await mutation.mutateAsync({
         email:     form.email,
         password:  form.password,
         firstName: form.firstName,
@@ -85,14 +84,7 @@ export const SignUpPage: React.FC = () => {
           ...(form.mcNumber ? { mcNumber: form.mcNumber } : {}),
         },
       });
-      login(
-        // SignUp doesn't return a token — redirect to SignIn to get one
-        // (or you can auto-login by calling signIn after signUp)
-        '',
-        data.user,
-      );
-      toast.success('Company registered! Please sign in.');
-      navigate('/sign-in');
+      setRegisteredEmail(form.email);
     } catch (err) {
       toast.error((err as Error).message ?? 'Registration failed');
     }
@@ -102,6 +94,64 @@ export const SignUpPage: React.FC = () => {
     errors[key] ? (
       <p className="text-xs text-red-500">{errors[key]}</p>
     ) : null;
+
+  // ── Email confirmation screen ──────────────────────────────────────────────
+  if (registeredEmail) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-primary/[0.03] p-4">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 flex flex-col items-center gap-2">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.8"/>
+                <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">HazmatAudit</h1>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-background p-6 shadow-sm text-center">
+            {/* Mail icon */}
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+                <path d="M2 7l10 7 10-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+
+            <h2 className="text-lg font-semibold text-foreground">Check your inbox</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              We sent a confirmation link to
+            </p>
+            <p className="mt-1 text-sm font-medium text-foreground">{registeredEmail}</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Click the link in the email to activate your account, then sign in.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate('/sign-in')}
+              className="mt-6 flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Go to sign in
+            </button>
+          </div>
+
+          <p className="mt-4 text-center text-sm text-muted-foreground">
+            Wrong email?{' '}
+            <button
+              type="button"
+              onClick={() => setRegisteredEmail(null)}
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Go back
+            </button>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-primary/[0.03] p-4">
