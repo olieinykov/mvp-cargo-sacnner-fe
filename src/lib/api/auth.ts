@@ -103,7 +103,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 // ─── Auth calls ────────────────────────────────────────────────────────────────
 
 export async function signIn(payload: SignInPayload): Promise<SignInResponse> {
-  const res = await fetch(`${BASE}/signIn`, {
+  const res = await fetch(`${BASE}/sign-in`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -112,7 +112,7 @@ export async function signIn(payload: SignInPayload): Promise<SignInResponse> {
 }
 
 export async function signUpAdmin(payload: SignUpAdminPayload): Promise<SignUpResponse> {
-  const res = await fetch(`${BASE}/signUp-admin`, {
+  const res = await fetch(`${BASE}/sign-up-company`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -121,7 +121,7 @@ export async function signUpAdmin(payload: SignUpAdminPayload): Promise<SignUpRe
 }
 
 export async function signUpInvited(payload: SignUpInvitedPayload): Promise<SignUpResponse> {
-  const res = await fetch(`${BASE}/signUp-invite`, {
+  const res = await fetch(`${BASE}/sign-up-invite`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
