@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
+import type { AuthUser } from '../api/auth';
 
 export type AuthState = {
+  user: AuthUser | null;
   accessToken: string | null;
 };
 
@@ -9,10 +11,10 @@ const STORAGE_KEY = 'auth';
 function loadFromStorage(): AuthState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { accessToken: null };
+    if (!raw) return { user: null, accessToken: null };
     return JSON.parse(raw) as AuthState;
   } catch {
-    return { accessToken: null };
+    return { user: null, accessToken: null };
   }
 }
 
@@ -46,25 +48,27 @@ export function useAuthStore() {
   }, []);
 
   const login = useCallback(
-    (accessToken: string) => {
-      setState({ accessToken });
+    (accessToken: string, user: AuthUser) => {
+      setState({ user, accessToken });
     },
     [],
   );
 
   const logout = useCallback(() => {
-    setState({ accessToken: null });
+    setState({ user: null, accessToken: null });
   }, []);
 
   return {
+    user:        _state.user,
     accessToken: _state.accessToken,
-    isLoggedIn:  !!_state.accessToken,
+    isLoggedIn:  !!_state.user,
+    isAdmin:     _state.user?.role === 'admin',
     login,
     logout,
   };
 }
 
 export function globalLogout() {
-  setState({ accessToken: null });
+  setState({ user: null, accessToken: null });
   window.location.href = '/sign-in';
 }

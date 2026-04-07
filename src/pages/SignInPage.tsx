@@ -18,7 +18,7 @@ export const SignInPage: React.FC = () => {
     e.preventDefault();
     try {
       const data = await mutation.mutateAsync({ email, password });
-      login(data.accessToken);
+      login(data.accessToken, data.user);
       toast.success('Welcome back!');
       navigate('/audits');
     } catch (err) {

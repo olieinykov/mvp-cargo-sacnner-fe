@@ -10,8 +10,7 @@ import type {
   StoredAudit,
   ServerAuditResponse,
 } from "../lib/utils/useAuditStore";
-import type { AuditFilters, AuditStatus, SortBy } from "../lib/api/audits";
-import { useMeQuery } from "../lib/api/auth";
+import { useAuthStore } from "../lib/utils/useAuthStore";
 
 // ─── Rows-per-page custom select ───────────────────────────────────────────────
 
@@ -208,119 +207,22 @@ function Pagination({
   );
 }
 
-// ─── Filters bar ───────────────────────────────────────────────────────────────
-
-function FiltersBar({
-  filters,
-  disabled,
-  onChange,
-}: {
-  filters: AuditFilters;
-  disabled: boolean;
-  onChange: (next: Partial<AuditFilters>) => void;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2 pt-[3px]">
-
-      {/* Status */}
-      <select
-        disabled={disabled}
-        value={filters.status ?? ''}
-        onChange={(e) => onChange({ status: e.target.value as AuditStatus | '' })}
-        className="h-8 rounded-lg border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
-        aria-label="Filter by status"
-      >
-        <option value="">All statuses</option>
-        <option value="passed">Passed</option>
-        <option value="failed">Failed</option>
-      </select>
-
-      {/* Sort by */}
-      <select
-        disabled={disabled}
-        value={filters.sortBy ?? 'date'}
-        onChange={(e) => onChange({ sortBy: e.target.value as SortBy })}
-        className="h-8 rounded-lg border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
-        aria-label="Sort by"
-      >
-        <option value="date">Sort by date</option>
-        <option value="score">Sort by score</option>
-      </select>
-
-      {/* Sort order */}
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() =>
-          onChange({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })
-        }
-        aria-label={`Sort order: ${filters.sortOrder ?? 'desc'}`}
-        className="flex h-8 items-center gap-1.5 rounded-lg border border-input bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted disabled:opacity-40"
-      >
-        {filters.sortOrder === 'asc' ? (
-          <>↑ Asc</>
-        ) : (
-          <>↓ Desc</>
-        )}
-      </button>
-
-      {/* Date from */}
-      <input
-        type="date"
-        disabled={disabled}
-        value={filters.dateFrom ? filters.dateFrom.slice(0, 10) : ''}
-        onChange={(e) =>
-          onChange({
-            dateFrom: e.target.value ? `${e.target.value}T00:00:00Z` : undefined,
-          })
-        }
-        aria-label="Date from"
-        className="h-8 rounded-lg border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
-      />
-
-      <span className="text-xs text-muted-foreground">—</span>
-
-      {/* Date to */}
-      <input
-        type="date"
-        disabled={disabled}
-        value={filters.dateTo ? filters.dateTo.slice(0, 10) : ''}
-        onChange={(e) =>
-          onChange({
-            dateTo: e.target.value ? `${e.target.value}T23:59:59Z` : undefined,
-          })
-        }
-        aria-label="Date to"
-        className="h-8 rounded-lg border border-input bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
-      />
-
-      {/* Reset */}
-      {(filters.status || filters.dateFrom || filters.dateTo) && (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => onChange({ status: '', dateFrom: undefined, dateTo: undefined })}
-          className="h-8 rounded-lg px-3 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40"
-        >
-          Reset filters
-        </button>
-      )}
-    </div>
-  );
-}
-
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export const AuditsPage: React.FC = () => {
-  const { data: user } = useMeQuery();
+  const { user } = useAuthStore();
   const auditorId = user?.companyId ?? "";
   const {
-  audits, loading, error, pagination,
-  page, limit, filters,
-  setPage, changeLimit,
-  updateFilters,
-  addAudit,
-} = useAuditStore(auditorId);
+    audits,
+    loading,
+    error,
+    pagination,
+    page,
+    limit,
+    setPage,
+    changeLimit,
+    addAudit,
+  } = useAuditStore(auditorId);
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
   const [resultAudit, setResultAudit] = React.useState<StoredAudit | null>(
@@ -389,7 +291,6 @@ export const AuditsPage: React.FC = () => {
             </div>
           ) : (
             <>
-            <FiltersBar filters={filters} disabled={loading} onChange={updateFilters} />
               <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-background">
                 <div className="h-full max-h-full overflow-auto overscroll-contain">
                   <AuditsTable

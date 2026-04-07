@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useInviteInfoQuery, useSignUpInvitedMutation } from '../lib/api/auth';
+import { useAuthStore } from '../lib/utils/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -11,6 +12,7 @@ const inputCls =
   'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none ring-offset-background transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50';
 
 export const InvitePage: React.FC<Props> = ({ token }) => {
+  const { login } = useAuthStore();
   const { data: invite, isLoading, isError } = useInviteInfoQuery(token);
   const mutation = useSignUpInvitedMutation();
 
@@ -38,6 +40,15 @@ export const InvitePage: React.FC<Props> = ({ token }) => {
     if (!invite || !token) return;
 
     try {
+      const data = await mutation.mutateAsync({
+        email:       invite.email,
+        password,
+        firstName,
+        lastName,
+        inviteToken: token,
+      });
+      // Invited signUp doesn't return a token — go to SignIn
+      login('', data.user);
       toast.success(`Welcome to ${invite.company.name}! Please sign in.`);
       navigate('sign-in');
     } catch (err) {
