@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { globalLogout } from '../utils/useAuthStore';
 
 //const BASE = `http://localhost:3000/api/v1/auth`;
 const BASE = `${import.meta.env.VITE_API_URL}/auth`;
@@ -94,6 +95,11 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
+
+    if (res.status === 401) {
+      globalLogout();
+    }
+
     const body = await res.json().catch(() => ({}));
     throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`);
   }

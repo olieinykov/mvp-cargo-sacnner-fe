@@ -67,3 +67,8 @@ export function useAuthStore() {
     logout,
   };
 }
+
+export function globalLogout() {
+  setState({ user: null, accessToken: null });
+  window.location.href = '/sign-in';
+}
