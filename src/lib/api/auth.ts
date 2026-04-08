@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { globalLogout } from '../utils/useAuthStore';
+import { globalLogout, useAuthStore } from '../utils/useAuthStore';
 
 //const BASE = `http://localhost:3000/api/v1/auth`;
 const BASE = `${import.meta.env.VITE_API_URL}/auth`;
@@ -15,6 +15,7 @@ export type AuthUser = {
   lastName: string;
   role: UserRole;
   companyId: string | null;
+  companyName: string
 };
 
 export type AuthCompany = {
@@ -159,6 +160,11 @@ export async function sendInvitation(email: string, role: UserRole): Promise<voi
   await handleResponse(res);
 }
 
+export async function getMe(): Promise<AuthUser> {
+  const res = await fetch(`${BASE}/me`, { headers: authHeaders() });
+  return handleResponse<AuthUser>(res);
+}
+
 // ─── React Query hooks ─────────────────────────────────────────────────────────
 
 export const useSignInMutation = () =>
@@ -182,9 +188,20 @@ export const useCompanyUsersQuery = () =>
   useQuery({
     queryKey: ['companyUsers'],
     queryFn: getCompanyUsers,
-  });
+});
 
 export const useSendInvitationMutation = () =>
   useMutation({ mutationFn: ({ email, role }: { email: string; role: UserRole }) =>
     sendInvitation(email, role),
   });
+
+export const useMeQuery = () => {
+  const { accessToken } = useAuthStore();
+  
+  return useQuery({
+    queryKey: ['me'],
+    queryFn: getMe,
+    enabled: !!accessToken, 
+    retry: false,
+  });
+};

@@ -7,9 +7,9 @@ import { UsersPage } from './pages/UsersPage';
 import { SignInPage } from './pages/SignInPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { InvitePage } from './pages/InvitePage';
-import { useAuthStore } from './lib/utils/useAuthStore';
 import { Navigate, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { ProtectedRoute, PublicRoute } from './components/routing/ProtectGuard';
+import { useMeQuery } from './lib/api/auth';
 
 const AppLayout = () => {
   return (
@@ -29,7 +29,8 @@ const AppLayout = () => {
 
 
 const App: React.FC = () => {
-  const { isAdmin } = useAuthStore();
+  const { data: user } = useMeQuery();
+  const isAdmin = user?.role === 'admin';
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 

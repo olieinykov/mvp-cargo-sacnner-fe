@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { cn } from '../../lib/utils/cn';
 import { useAuthStore } from '../../lib/utils/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useMeQuery } from '../../lib/api/auth';
 
 type SidebarProps = {
   className?: string;
@@ -82,7 +83,11 @@ function NavItem({
 
 export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const themeContext = useContext(ThemeContext);
-  const { isAdmin, user, logout } = useAuthStore();
+  const { data: user } = useMeQuery();
+  const { logout } = useAuthStore();
+
+  const companyName = user?.companyName;
+  const isAdmin = user?.role === 'admin';
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -108,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             <path d="M18.5 20.2C19.6046 20.2 20.5 19.3046 20.5 18.2C20.5 17.0954 19.6046 16.2 18.5 16.2C17.3954 16.2 16.5 17.0954 16.5 18.2C16.5 19.3046 17.3954 20.2 18.5 20.2Z" stroke="currentColor" strokeWidth="1.8" />
           </svg>
         </div>
-        <span className="text-sm font-semibold tracking-tight">Hazmat Audit</span>
+        <span className="text-sm font-semibold tracking-tight">{companyName}</span>
       </div>
 
       {/* Nav */}

@@ -2,14 +2,18 @@ import React from 'react';
 import { Table, TableHead, TableRow, TableCell } from '../ui/table';
 import { Skeleton } from '../ui/skeleton';
 import type { StoredAudit } from '../../lib/utils/useAuditStore';
+import type { SortBy } from '../../lib/api/audits';
 
-const SKELETON_ROW_COUNT = 8;
+const SKELETON_ROW_COUNT = 6;
 
 type Props = {
   audits: StoredAudit[];
   loading: boolean;
   onRowClick: (audit: StoredAudit) => void;
   onCreateClick?: () => void;
+  sortBy: SortBy;
+  sortOrder: 'asc' | 'desc';
+  onSortChange: (sortBy: SortBy, sortOrder: 'asc' | 'desc') => void;
 };
 
 const scoreColor = (score: number): string => {
@@ -84,25 +88,135 @@ function DateCell({ dateStr }: { dateStr: string }) {
   );
 }
 
-const TableHeader: React.FC = () => (
-  <thead>
-    <TableRow>
-      <TableHead className="w-12">#</TableHead>
-      <TableHead>Date</TableHead>
-      <TableHead>Status</TableHead>
-      <TableHead>Score</TableHead>
-      <TableHead>Issues</TableHead>
-      <TableHead>Summary</TableHead>
-    </TableRow>
-  </thead>
-);
+// ─── Sort icon ────────────────────────────────────────────────────────────────
 
-export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick, onCreateClick }) => {
+function SortIcon({ active, order }: { active: boolean; order: 'asc' | 'desc' }) {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0 transition-colors text-foreground"
+    >
+      {/* up arrow */}
+      <path
+        d="M3.5 4.5L6 2L8.5 4.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={active && order === 'asc' ? 1 : 0.4}
+      />
+      {/* down arrow */}
+      <path
+        d="M3.5 7.5L6 10L8.5 7.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={active && order === 'desc' ? 1 : 0.4}
+      />
+    </svg>
+  );
+}
+
+// ─── Sortable header cell ─────────────────────────────────────────────────────
+
+function SortableHead({
+  column,
+  label,
+  sortBy,
+  sortOrder,
+  onSortChange,
+  className,
+}: {
+  column: SortBy;
+  label: string;
+  sortBy: SortBy;
+  sortOrder: 'asc' | 'desc';
+  onSortChange: (sortBy: SortBy, sortOrder: 'asc' | 'desc') => void;
+  className?: string;
+}) {
+  const active = sortBy === column;
+
+  const handleClick = () => {
+    if (active) {
+      onSortChange(column, sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      onSortChange(column, 'desc');
+    }
+  };
+
+  return (
+    <TableHead className={className}>
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-sort={active ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+        className="inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 text-inherit uppercase font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
+      >
+        {label}
+        <SortIcon active={active} order={sortOrder} />
+      </button>
+    </TableHead>
+  );
+}
+
+// ─── Table header ─────────────────────────────────────────────────────────────
+
+function TableHeader({
+  sortBy,
+  sortOrder,
+  onSortChange,
+}: {
+  sortBy: SortBy;
+  sortOrder: 'asc' | 'desc';
+  onSortChange: (sortBy: SortBy, sortOrder: 'asc' | 'desc') => void;
+}) {
+  return (
+    <thead>
+      <TableRow>
+        <TableHead className="w-12">#</TableHead>
+        <SortableHead
+          column="date"
+          label="Date"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={onSortChange}
+        />
+        <TableHead>Status</TableHead>
+        <SortableHead
+          column="score"
+          label="Score"
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSortChange={onSortChange}
+        />
+        <TableHead>Issues</TableHead>
+        <TableHead>Summary</TableHead>
+      </TableRow>
+    </thead>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export const AuditsTable: React.FC<Props> = ({
+  audits,
+  loading,
+  onRowClick,
+  onCreateClick,
+  sortBy,
+  sortOrder,
+  onSortChange,
+}) => {
   if (loading) {
     return (
       <div role="status" aria-busy="true" aria-label="Loading audits" className="w-full">
         <Table>
-          <TableHeader />
+          <TableHeader sortBy={sortBy} sortOrder={sortOrder} onSortChange={onSortChange} />
           <tbody>
             {Array.from({ length: SKELETON_ROW_COUNT }).map((_, rowIndex) => (
               <TableRow key={`audit-skeleton-${rowIndex}`}>
@@ -163,7 +277,7 @@ export const AuditsTable: React.FC<Props> = ({ audits, loading, onRowClick, onCr
 
   return (
     <Table>
-      <TableHeader />
+      <TableHeader sortBy={sortBy} sortOrder={sortOrder} onSortChange={onSortChange} />
       <tbody>
         {audits.map((audit, idx) => {
           const { audit: result } = audit.response;

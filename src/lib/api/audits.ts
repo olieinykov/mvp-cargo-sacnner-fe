@@ -32,42 +32,56 @@ type PaginatedResponse = {
   };
 };
 
+export type SortBy = 'date' | 'score';
+export type SortOrder = 'asc' | 'desc';
+export type AuditStatus = 'passed' | 'failed';
+
+export type AuditFilters = {
+  sortBy?: SortBy;
+  sortOrder?: SortOrder;
+  status?: AuditStatus | '';
+  dateFrom?: string;
+  dateTo?: string;
+};
+
 export type Pagination = PaginatedResponse["pagination"];
 
 const fetchAudits = async (
   page: number,
   limit: number,
-  auditorId: string
+  auditorId: string,
+  filters: AuditFilters = {},
 ): Promise<{ audits: StoredAudit[]; pagination: Pagination }> => {
   const url = new URL(AUDIT_ENDPOINT);
-  url.searchParams.set("page", String(page));
-  url.searchParams.set("limit", String(limit));
-  url.searchParams.set("auditorId", auditorId);
-  const response = await fetch(url.toString(), {
-    headers: authHeaders(),
-  });
+  url.searchParams.set('page', String(page));
+  url.searchParams.set('limit', String(limit));
+  url.searchParams.set('auditorId', auditorId);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch audits");
-  }
+  if (filters.sortBy)    url.searchParams.set('sortBy',    filters.sortBy);
+  if (filters.sortOrder) url.searchParams.set('sortOrder', filters.sortOrder);
+  if (filters.status)    url.searchParams.set('status',    filters.status);
+  if (filters.dateFrom)  url.searchParams.set('dateFrom',  filters.dateFrom);
+  if (filters.dateTo)    url.searchParams.set('dateTo',    filters.dateTo);
+
+  const response = await fetch(url.toString(), { headers: authHeaders() });
+  if (!response.ok) throw new Error('Failed to fetch audits');
 
   const json = (await response.json()) as PaginatedResponse;
-
   return {
     audits: json.data.map((row) => ({
-      id: row.id,
-      createdAt: row.created_at,
-      response: row.response,
+      id:          row.id,
+      createdAt:   row.created_at,
+      response:    row.response,
       auditImages: row.auditImages as AuditImage[],
     })),
     pagination: json.pagination,
   };
 };
 
-export const useAuditsQuery = (page: number, limit: number, auditorId: string) =>
+export const useAuditsQuery = (page: number, limit: number, auditorId: string, filters: AuditFilters = {},) =>
   useQuery({
-    queryKey: ["audits", page, limit],
-    queryFn: () => fetchAudits(page, limit, auditorId),
+    queryKey: ["audits", page, limit, filters],
+    queryFn: () => fetchAudits(page, limit, auditorId, filters),
     enabled: !!auditorId
   });
 

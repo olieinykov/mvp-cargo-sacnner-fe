@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuditsQuery } from '../api/audits';
-import type { Pagination } from '../api/audits';
+import type { AuditFilters, Pagination } from '../api/audits';
 
 // ─── Server response types ─────────────────────────────────────────────────────
 
@@ -87,10 +87,25 @@ export type StoredAudit = {
 export function useAuditStore(auditorId: string) {
   const queryClient = useQueryClient();
 
-  const [page,  setPage]  = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [page,    setPage]    = useState(1);
+  const [limit,   setLimit]   = useState(20);
+  const [filters, setFilters] = useState<AuditFilters>({
+    sortBy:    'date',
+    sortOrder: 'desc',
+  });
 
-  const { data, isLoading: loading, error } = useAuditsQuery(page, limit, auditorId);
+  const { data, isLoading: loading, error } =
+    useAuditsQuery(page, limit, auditorId, filters);
+
+  const updateFilters = useCallback((next: Partial<AuditFilters>) => {
+    setPage(1);
+    setFilters((prev) => ({ ...prev, ...next }));
+  }, []);
+
+  const changeLimit = useCallback((newLimit: number) => {
+    setPage(1);
+    setLimit(newLimit);
+  }, []);
 
   const audits: StoredAudit[]            = data?.audits     ?? [];
   const pagination: Pagination | undefined = data?.pagination;
@@ -110,11 +125,6 @@ export function useAuditStore(auditorId: string) {
     queryClient.invalidateQueries({ queryKey: ['audits'] });
   }, [queryClient]);
 
-  const changeLimit = useCallback((newLimit: number) => {
-    setPage(1);
-    setLimit(newLimit);
-  }, []);
-
   return {
     audits,
     loading,
@@ -122,8 +132,10 @@ export function useAuditStore(auditorId: string) {
     pagination,
     page,
     limit,
+    filters,
     setPage,
     changeLimit,
+    updateFilters,
     addAudit,
     refetch,
   };
