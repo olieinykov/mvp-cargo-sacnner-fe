@@ -572,7 +572,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
         </div>
 
         {/* ── Tab switcher ── */}
-        <div className="sticky top-[-10px] z-10 mb-4 -mx-1 px-1 pb-1 bg-background/95 backdrop-blur">
+        <div className="sticky top-[-10px] z-10 mb-4 rounded-xl bg-background/95 backdrop-blur">
           <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
             {(
               [
@@ -638,7 +638,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
         {activeTab === 'details' && (
           <div>
             {/* Sticky slot tab switcher */}
-            <div className="sticky top-[42px] z-10 -mx-1 px-1 pb-3 bg-background/95 backdrop-blur">
+            <div className="sticky top-[42px] z-10 rounded-xl bg-background/95 backdrop-blur">
               <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/30 p-1">
                 {SLOT_TABS.map(({ key, label }) => (
                   <button
@@ -667,7 +667,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
               </div>
             </div>
 
-            <div className="rounded-xl border border-border/40 bg-background p-4">
+            <div className="rounded-xl border border-border/40 bg-background p-4 mt-3">
               <SlotPanel
                 slots={slotData[activeSlot]}
                 images={imagesByType[SLOT_TO_IMAGE_TYPE[activeSlot]] ?? []}
