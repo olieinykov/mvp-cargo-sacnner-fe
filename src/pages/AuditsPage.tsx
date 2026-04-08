@@ -651,7 +651,7 @@ function FiltersBar({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export const AuditsPage: React.FC = () => {
-  const { data: user } = useMeQuery();
+  const { data: user, isLoading: userLoading } = useMeQuery();
   const auditorId = user?.companyId ?? "";
   const {
     audits, loading, error, pagination,
@@ -732,6 +732,7 @@ export const AuditsPage: React.FC = () => {
                   <AuditsTable
                     audits={audits}
                     loading={loading}
+                    userLoading={userLoading}
                     onRowClick={(audit) => setResultAudit(audit)}
                     onCreateClick={() => setIsCreateOpen(true)}
                     sortBy={filters.sortBy ?? "date"}

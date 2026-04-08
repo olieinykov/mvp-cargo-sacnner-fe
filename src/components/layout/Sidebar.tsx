@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils/cn';
 import { useAuthStore } from '../../lib/utils/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMeQuery } from '../../lib/api/auth';
+import { Skeleton } from '../ui/skeleton';
 
 type SidebarProps = {
   className?: string;
@@ -83,7 +84,7 @@ function NavItem({
 
 export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const themeContext = useContext(ThemeContext);
-  const { data: user } = useMeQuery();
+  const { data: user, isLoading: userLoading } = useMeQuery();
   const { logout } = useAuthStore();
 
   const companyName = user?.companyName;
@@ -113,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             <path d="M18.5 20.2C19.6046 20.2 20.5 19.3046 20.5 18.2C20.5 17.0954 19.6046 16.2 18.5 16.2C17.3954 16.2 16.5 17.0954 16.5 18.2C16.5 19.3046 17.3954 20.2 18.5 20.2Z" stroke="currentColor" strokeWidth="1.8" />
           </svg>
         </div>
-        <span className="text-sm font-semibold tracking-tight">{companyName}</span>
+        <span className="text-sm font-semibold tracking-tight">{userLoading ? <Skeleton className="h-4 w-24" /> : companyName}</span>
       </div>
 
       {/* Nav */}
@@ -137,7 +138,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       {/* Footer */}
       <div className="mt-auto space-y-0.5 border-t border-border/40 pt-3">
         {/* User info chip */}
-        {user && (
+        {userLoading ? (
+          <div className="flex items-center gap-2.5 rounded-lg px-3 py-2">
+            <Skeleton className="h-7 w-7 shrink-0 rounded-full" />
+            <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-2.5 w-12" />
+            </div>
+          </div>
+        ) : user && (
           <div className="flex items-center gap-2.5 rounded-lg px-3 py-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
               {user.firstName[0]}{user.lastName[0]}

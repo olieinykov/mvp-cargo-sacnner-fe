@@ -9,6 +9,7 @@ const SKELETON_ROW_COUNT = 6;
 type Props = {
   audits: StoredAudit[];
   loading: boolean;
+  userLoading?: boolean;
   onRowClick: (audit: StoredAudit) => void;
   onCreateClick?: () => void;
   sortBy: SortBy;
@@ -155,7 +156,7 @@ function SortableHead({
         type="button"
         onClick={handleClick}
         aria-sort={active ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
-        className="inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 text-inherit uppercase font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
+        className="inline-flex items-center gap-1.5 rounded-md px-1 py-0.5 text-inherit uppercase font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {label}
         <SortIcon active={active} order={sortOrder} />
@@ -206,13 +207,15 @@ function TableHeader({
 export const AuditsTable: React.FC<Props> = ({
   audits,
   loading,
+  userLoading,
   onRowClick,
   onCreateClick,
   sortBy,
   sortOrder,
   onSortChange,
 }) => {
-  if (loading) {
+  const isLoading = loading || userLoading;
+  if (isLoading) {
     return (
       <div role="status" aria-busy="true" aria-label="Loading audits" className="w-full">
         <Table>
@@ -245,7 +248,7 @@ export const AuditsTable: React.FC<Props> = ({
     );
   }
 
-  if (!audits.length) {
+  if (!isLoading && !audits.length) {
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-muted-foreground">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/50 bg-muted/30">
