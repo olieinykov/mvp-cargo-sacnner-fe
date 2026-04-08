@@ -203,7 +203,7 @@ export const ImageFilesField: React.FC<ImageFilesFieldProps> = ({
         name={id}
         type="file"
         multiple
-        accept="image/*"
+        accept="image/*,application/pdf"
         ref={inputRef}
         onChange={handleInputChange}
         onBlur={onBlur}

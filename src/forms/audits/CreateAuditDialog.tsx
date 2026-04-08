@@ -9,7 +9,7 @@ import {
 } from "../../lib/api/audits";
 import { ImageFilesField } from "./ImageFilesField";
 import type { ServerAuditResponse } from "../../lib/utils/useAuditStore";
-import { useAuthStore } from "../../lib/utils/useAuthStore";
+import { useMeQuery } from "../../lib/api/auth";
 
 const fileSchema = z.instanceof(File);
 
@@ -44,7 +44,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   handleClose,
   onAuditCreated,
 }) => {
-  const { user } = useAuthStore();
+  const { data: user } = useMeQuery();
   const auditorId = user?.companyId ?? "";
   const uploadMutation = useUploadImagesMutation();
   const createAuditMutation = useCreateAuditMutation();
