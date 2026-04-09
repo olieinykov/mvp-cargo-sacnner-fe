@@ -84,6 +84,14 @@ export type CompanyUser = {
   registrationData: string;
 };
 
+export type PendingInvitation = {
+  id: string;
+  email: string;
+  role: UserRole;
+  expiresAt: string;
+  token: string;
+};
+
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function authHeaders(): HeadersInit {
@@ -165,6 +173,66 @@ export async function getMe(): Promise<AuthUser> {
   return handleResponse<AuthUser>(res);
 }
 
+// POST /auth/request-password-reset
+export async function requestPasswordReset(email: string): Promise<void> {
+  const res = await fetch(`${BASE}/request-password-reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  await handleResponse(res);
+}
+
+// POST /auth/update-password
+export async function updatePassword(password: string, accessToken: string): Promise<void> {
+  const res = await fetch(`${BASE}/update-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ password }),
+  });
+  await handleResponse(res);
+}
+
+// GET /auth/invitations
+export async function getPendingInvitations(): Promise<PendingInvitation[]> {
+  const res = await fetch(`${BASE}/invitations`, { headers: authHeaders() });
+  const data = await handleResponse<{ invitations: PendingInvitation[] }>(res);
+  return data.invitations;
+}
+
+// POST /auth/invitation/:id/cancel
+export async function cancelInvitation(id: string): Promise<void> {
+  const res = await fetch(`${BASE}/invitation/${id}/cancel`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({}),
+  });
+  await handleResponse(res);
+}
+
+// POST /auth/invitation/:id/resend
+export async function resendInvitation(id: string): Promise<{ expiresAt: string }> {
+  const res = await fetch(`${BASE}/invitation/${id}/resend`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({}),
+  });
+  return handleResponse<{ expiresAt: string }>(res);
+}
+
+// PATCH /auth/users/:userId/role
+export async function updateUserRole(userId: string, role: UserRole): Promise<void> {
+  const res = await fetch(`${BASE}/users/${userId}/role`, {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ role }),
+  });
+  await handleResponse(res);
+}
+
 // ─── React Query hooks ─────────────────────────────────────────────────────────
 
 export const useSignInMutation = () =>
@@ -190,9 +258,34 @@ export const useCompanyUsersQuery = () =>
     queryFn: getCompanyUsers,
 });
 
+export const usePendingInvitationsQuery = () =>
+  useQuery({
+    queryKey: ['pendingInvitations'],
+    queryFn: getPendingInvitations,
+  });
+
 export const useSendInvitationMutation = () =>
   useMutation({ mutationFn: ({ email, role }: { email: string; role: UserRole }) =>
     sendInvitation(email, role),
+  });
+
+export const useCancelInvitationMutation = () =>
+  useMutation({ mutationFn: (id: string) => cancelInvitation(id) });
+
+export const useResendInvitationMutation = () =>
+  useMutation({ mutationFn: (id: string) => resendInvitation(id) });
+
+export const useUpdateUserRoleMutation = () =>
+  useMutation({ mutationFn: ({ userId, role }: { userId: string; role: UserRole }) =>
+    updateUserRole(userId, role),
+  });
+
+export const useRequestPasswordResetMutation = () =>
+  useMutation({ mutationFn: (email: string) => requestPasswordReset(email) });
+
+export const useUpdatePasswordMutation = () =>
+  useMutation({ mutationFn: ({ password, accessToken }: { password: string; accessToken: string }) =>
+    updatePassword(password, accessToken),
   });
 
 export const useMeQuery = () => {

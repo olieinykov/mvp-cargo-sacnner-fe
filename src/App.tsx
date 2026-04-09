@@ -7,6 +7,7 @@ import { UsersPage } from './pages/UsersPage';
 import { SignInPage } from './pages/SignInPage';
 import { SignUpPage } from './pages/SignUpPage';
 import { InvitePage } from './pages/InvitePage';
+import { UpdatePasswordPage } from './pages/UpdatePasswordPage';
 import { Navigate, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { ProtectedRoute, PublicRoute } from './components/routing/ProtectGuard';
 import { useMeQuery } from './lib/api/auth';
@@ -27,7 +28,6 @@ const AppLayout = () => {
 
 // ─── App ───────────────────────────────────────────────────────────────────────
 
-
 const App: React.FC = () => {
   const { data: user } = useMeQuery();
   const isAdmin = user?.role === 'admin';
@@ -41,6 +41,7 @@ const App: React.FC = () => {
           <Route path="/sign-in" element={<SignInPage />} />
           <Route path="/sign-up" element={<SignUpPage />} />
           <Route path="/invite" element={<InvitePage token={token} />} />
+          <Route path="/update-password" element={<UpdatePasswordPage />} />
         </Route>
 
         <Route element={<ProtectedRoute />}>
