@@ -56,15 +56,15 @@ export type ServerAuditResponse = {
   bol: SlotResult;
   marker: SlotResult;
   cargo: SlotResult;
+  seal: SlotResult;
   audit: AuditResult;
-  /** Populated by POST /audit — images with their detected slot type */
   auditImages?: AuditImage[];
 };
 
 // ─── Audit image ───────────────────────────────────────────────────────────────
 
 /** Slot types that an image can belong to */
-export type AuditImageType = 'bol' | 'placard' | 'cargo';
+export type AuditImageType = 'bol' | 'placard' | 'cargo' | 'seal';
 
 export type AuditImage = {
   url: string;

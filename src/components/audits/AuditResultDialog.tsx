@@ -43,12 +43,14 @@ const SLOT_TO_IMAGE_TYPE: Record<string, AuditImageType> = {
   bol:    'bol',
   marker: 'placard',
   cargo:  'cargo',
+  seal:   'seal',
 };
 
 const IMAGE_TYPE_LABEL: Record<AuditImageType, string> = {
   bol:     'BOL',
   placard: 'Placard',
   cargo:   'Cargo',
+  seal:    'Seal',
 };
 
 function isExtractedField(v: unknown): v is ExtractedField {
@@ -458,6 +460,7 @@ const SLOT_TABS = [
   { key: 'bol',    label: 'BOL',      slotKey: 'bol'    },
   { key: 'marker', label: 'Placard',  slotKey: 'marker' },
   { key: 'cargo',  label: 'Interior', slotKey: 'cargo'  },
+  { key: 'seal',   label: 'Seal',     slotKey: 'seal'   },
 ] as const;
 
 type SlotKey = typeof SLOT_TABS[number]['key'];
@@ -477,7 +480,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
 
   // useMemo must run unconditionally — safely derive from nullable audit
   const imagesByType = React.useMemo<Record<AuditImageType, AuditImage[]>>(() => {
-    const map: Record<AuditImageType, AuditImage[]> = { bol: [], placard: [], cargo: [] };
+    const map: Record<AuditImageType, AuditImage[]> = { bol: [], placard: [], cargo: [], seal: [] };
     for (const img of audit?.auditImages ?? []) map[img.type]?.push(img);
     return map;
   }, [audit]);
@@ -500,6 +503,7 @@ export const AuditResultDialog: React.FC<Props> = ({ audit, open, onClose }) => 
     bol:    Array.isArray(response.bol)    ? response.bol    : [response.bol],
     marker: Array.isArray(response.marker) ? response.marker : [response.marker],
     cargo:  Array.isArray(response.cargo)  ? response.cargo  : [response.cargo],
+    seal:   Array.isArray(response.seal)   ? response.seal   : [response.seal],
   };
 
   const validIssueCount = result.issues.filter((i) => i.check && i.message).length;
