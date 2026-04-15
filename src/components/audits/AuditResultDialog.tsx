@@ -311,26 +311,43 @@ function SlotPanel({
   images: AuditImage[];
   onOpenLightbox: (images: AuditImage[], index: number) => void;
 }) {
-  if (!slots.length) return null;
+  const validSlots = slots?.filter(Boolean) ?? [];
 
-  const allKeys = Object.keys(slots[0].extracted as SlotExtracted);
-  const avgConfidence = Math.round(
-    (slots.reduce((sum, s) => sum + s.confidence.overall, 0) / slots.length) * 100,
-  );
+  if (!validSlots.length && !images.length) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10 text-muted-foreground">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" className="text-muted-foreground/40" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <p className="text-sm">No data or images available for this category.</p>
+      </div>
+    );
+  }
+
+  const avgConfidence = validSlots.length > 0
+    ? Math.round((validSlots.reduce((sum, s) => sum + (s.confidence?.overall ?? 0), 0) / validSlots.length) * 100)
+    : null;
+
+  const allKeys = validSlots.length > 0 && validSlots[0].extracted
+    ? Object.keys(validSlots[0].extracted as SlotExtracted)
+    : [];
 
   return (
     <div className="space-y-1">
       {/* Confidence bar */}
-      <div className="mb-4 flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2.5">
-        <span className="text-xs text-muted-foreground shrink-0">Confidence</span>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary transition-all"
-            style={{ width: `${avgConfidence}%` }}
-          />
+      {avgConfidence !== null && (
+        <div className="mb-4 flex items-center gap-3 rounded-lg bg-muted/30 px-3 py-2.5">
+          <span className="text-xs text-muted-foreground shrink-0">Confidence</span>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all"
+              style={{ width: `${avgConfidence}%` }}
+            />
+          </div>
+          <span className="shrink-0 tabular-nums text-xs font-semibold text-foreground">{avgConfidence}%</span>
         </div>
-        <span className="shrink-0 tabular-nums text-xs font-semibold text-foreground">{avgConfidence}%</span>
-      </div>
+      )}
 
       {/* Image strip for this slot */}
       {images.length > 0 && (
@@ -344,7 +361,7 @@ function SlotPanel({
 
       {allKeys.map((key) => {
         if (key === 'otherNotes') {
-          const allNotes = slots.flatMap((s) => {
+          const allNotes = validSlots.flatMap((s) => {
             const raw = (s.extracted as SlotExtracted).otherNotes;
             if (!isOtherNotes(raw)) return [];
             return raw.filter(
@@ -369,7 +386,7 @@ function SlotPanel({
           );
         }
 
-        const fields = slots
+        const fields = validSlots
           .map((s) => (s.extracted as SlotExtracted)[key])
           .filter(isExtractedField);
 
