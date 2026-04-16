@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useUpdatePasswordMutation } from '../lib/api/auth';
+import { BrandLogo } from '../components/common/BrandLogo';
 
 function parseHashToken(): { accessToken: string | null; type: string | null } {
   const hash = window.location.hash.slice(1);
@@ -66,16 +67,7 @@ export const UpdatePasswordPage: React.FC = () => {
       <div className="w-full max-w-sm">
 
         {/* Logo / brand mark */}
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-              <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.8"/>
-              <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">HazmatAudit</h1>
-        </div>
+        <BrandLogo />
 
         <div className="rounded-2xl border border-border bg-background p-6 shadow-sm">
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useInviteInfoQuery, useSignUpInvitedMutation } from '../lib/api/auth';
 import { useNavigate } from 'react-router-dom';
+import { EmptyState } from '../components/ui/EmptyState';
+import { BrandLogo } from '../components/common/BrandLogo';
 
 type Props = {
   token: string | null;
@@ -90,16 +92,7 @@ export const InvitePage: React.FC<Props> = ({ token }) => {
       <div className="w-full max-w-sm">
 
         {/* Logo */}
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-              <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.8"/>
-              <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">HazmatAudit</h1>
-        </div>
+        <BrandLogo />
 
         {/* Invite banner */}
         <div className="mb-4 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3">
@@ -195,45 +188,3 @@ export const InvitePage: React.FC<Props> = ({ token }) => {
     </div>
   );
 };
-
-// ─── Empty state helper ────────────────────────────────────────────────────────
-
-function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-}: {
-  icon: 'link' | 'x';
-  title: string;
-  description: string;
-  action: { label: string; onClick: () => void };
-}) {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-primary/[0.03] p-4">
-      <div className="flex max-w-sm flex-col items-center gap-4 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/50 bg-muted/30 text-muted-foreground">
-          {icon === 'x' ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6"/>
-              <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-            </svg>
-          )}
-        </div>
-        <div>
-          <p className="font-semibold text-foreground">{title}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        </div>
-        <button type="button" onClick={action.onClick}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90">
-          {action.label}
-        </button>
-      </div>
-    </div>
-  );
-}

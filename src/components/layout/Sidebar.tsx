@@ -6,6 +6,7 @@ import { useAuthStore } from '../../lib/utils/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useMeQuery } from '../../lib/api/auth';
 import { Skeleton } from '../ui/skeleton';
+import { NavItem } from '../ui/NavItem';
 
 type SidebarProps = {
   className?: string;
@@ -47,38 +48,6 @@ const LogoutIcon: React.FC = () => (
     <path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-
-// ─── Nav item ──────────────────────────────────────────────────────────────────
-
-function NavItem({
-  icon,
-  label,
-  active,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      aria-current={active ? 'page' : undefined}
-      className={cn(
-        'group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-        active
-          ? 'bg-primary/10 text-primary'
-          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-      )}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
 
 // ─── Sidebar ───────────────────────────────────────────────────────────────────
 
