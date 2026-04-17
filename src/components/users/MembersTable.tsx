@@ -66,7 +66,7 @@ export const MembersTable = ({
               })}
             </TableCell>
             <TableCell>
-              <button
+              {user.id === currentUserId ? null : <button
                 type="button"
                 onClick={() => onChangeRole(user)}
                 className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -77,7 +77,7 @@ export const MembersTable = ({
                   <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
                 Edit
-              </button>
+              </button>}
             </TableCell>
           </TableRow>
         ))}

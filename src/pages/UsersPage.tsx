@@ -3,6 +3,7 @@ import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import {
   useCompanyUsersQuery,
+  useMeQuery,
   usePendingInvitationsQuery
 } from '../lib/api/auth';
 import type { CompanyUser } from '../lib/api/auth';
@@ -23,6 +24,7 @@ export const UsersPage: React.FC = () => {
 
   const { data: users = [], isLoading: usersLoading, error: usersError } = useCompanyUsersQuery();
   const { data: invitations = [], isLoading: invLoading, error: invError } = usePendingInvitationsQuery();
+  const { data: currentUser } = useMeQuery();
 
   const isLoading = tab === 'members' ? usersLoading : invLoading;
   const error     = tab === 'members' ? usersError   : invError;
@@ -94,7 +96,7 @@ export const UsersPage: React.FC = () => {
                   ) : users.length === 0 ? (
                     <MembersEmptyState onInvite={() => setInviteOpen(true)} />
                   ) : (
-                    <MembersTable users={users} onChangeRole={setRoleUser} />
+                    <MembersTable users={users} currentUserId={currentUser?.id} onChangeRole={setRoleUser} />
                   )
                 ) : (
                   isLoading ? (
