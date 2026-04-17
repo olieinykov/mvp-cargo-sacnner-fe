@@ -169,12 +169,11 @@ export const DateRangePicker = ({
         aria-expanded={open}
         aria-label="Date range"
         className={[
-          "flex h-8 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium shadow-sm transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40",
-          hasValue ? "text-foreground" : "text-muted-foreground",
+          "flex h-8 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium shadow-sm transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 text-foreground"
         ].join(" ")}
       >
         {/* calendar icon */}
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true" className="shrink-0 text-muted-foreground">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true" className="shrink-0">
           <rect x="1" y="2.5" width="12" height="10.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
           <path d="M1 5.5h12" stroke="currentColor" strokeWidth="1.4" />
           <path d="M4.5 1v3M9.5 1v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />

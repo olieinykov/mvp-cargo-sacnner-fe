@@ -5,9 +5,11 @@ import { RoleBadge } from "./RoleBadge";
 
 export const MembersTable = ({
   users,
+  currentUserId,
   onChangeRole,
 }: {
   users: CompanyUser[];
+  currentUserId?: string;
   onChangeRole: (user: CompanyUser) => void;
 }) => {
   return (
@@ -18,6 +20,7 @@ export const MembersTable = ({
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
+          <TableHead>Status</TableHead>
           <TableHead>Joined</TableHead>
           <TableHead className="w-16" />
         </TableRow>
@@ -33,11 +36,30 @@ export const MembersTable = ({
                 </div>
                 <span className="text-sm font-medium text-foreground">
                   {user.firstName} {user.lastName}
+                  {user.id === currentUserId && (
+                    <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>
+                  )}
                 </span>
               </div>
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">{user.email}</TableCell>
             <TableCell><RoleBadge role={user.role} /></TableCell>
+            <TableCell>
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${
+                  user.isActive
+                    ? 'bg-emerald-500/10 text-emerald-600'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    user.isActive ? 'bg-emerald-500' : 'bg-muted-foreground/50'
+                  }`}
+                />
+                {user.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </TableCell>
             <TableCell className="text-sm text-muted-foreground">
               {new Date(user.registrationData).toLocaleDateString('en-US', {
                 month: 'short', day: 'numeric', year: 'numeric',
@@ -48,13 +70,13 @@ export const MembersTable = ({
                 type="button"
                 onClick={() => onChangeRole(user)}
                 className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                title="Change role"
+                title="Edit member"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                   <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
-                Role
+                Edit
               </button>
             </TableCell>
           </TableRow>
@@ -73,6 +95,7 @@ export const MembersTableSkeleton = () => {
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
+          <TableHead>Status</TableHead>
           <TableHead>Joined</TableHead>
           <TableHead className="w-16" />
         </TableRow>
@@ -89,6 +112,7 @@ export const MembersTableSkeleton = () => {
             </TableCell>
             <TableCell><Skeleton className="h-4 w-40" /></TableCell>
             <TableCell><Skeleton className="h-6 w-16 rounded-md" /></TableCell>
+            <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
             <TableCell><Skeleton className="h-4 w-24" /></TableCell>
             <TableCell><Skeleton className="h-6 w-14 rounded-md" /></TableCell>
           </TableRow>

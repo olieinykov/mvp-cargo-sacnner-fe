@@ -29,7 +29,7 @@ const AppLayout = () => {
 // ─── App ───────────────────────────────────────────────────────────────────────
 
 const App: React.FC = () => {
-  const { data: user } = useMeQuery();
+  const { data: user, isLoading } = useMeQuery();
   const isAdmin = user?.role === 'admin';
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
@@ -51,12 +51,14 @@ const App: React.FC = () => {
             <Route 
               path="/users" 
               element={
-                isAdmin ? (
+                isLoading ? (
+                  <div className="flex h-full items-center justify-center">
+                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  </div>
+                ) : isAdmin ? (
                   <UsersPage />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-muted-foreground">
-                    <p className="text-sm">You don't have access to this page.</p>
-                  </div>
+                  <Navigate to="/audits" replace />
                 )
               } 
             />

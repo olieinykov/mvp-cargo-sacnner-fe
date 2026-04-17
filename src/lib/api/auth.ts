@@ -15,7 +15,8 @@ export type AuthUser = {
   lastName: string;
   role: UserRole;
   companyId: string | null;
-  companyName: string
+  companyName: string;
+  isActive: boolean;
 };
 
 export type AuthCompany = {
@@ -82,6 +83,7 @@ export type CompanyUser = {
   role: UserRole;
   companyId: string;
   registrationData: string;
+  isActive: boolean;
 };
 
 export type PendingInvitation = {
@@ -233,6 +235,16 @@ export async function updateUserRole(userId: string, role: UserRole): Promise<vo
   await handleResponse(res);
 }
 
+// PATCH /auth/users/:userId/status
+export async function updateUserStatus(userId: string, isActive: boolean): Promise<void> {
+  const res = await fetch(`${BASE}/users/${userId}/status`, {
+    method: 'PATCH',
+    headers: authHeaders(),
+    body: JSON.stringify({ isActive }),
+  });
+  await handleResponse(res);
+}
+
 // ─── React Query hooks ─────────────────────────────────────────────────────────
 
 export const useSignInMutation = () =>
@@ -286,6 +298,11 @@ export const useRequestPasswordResetMutation = () =>
 export const useUpdatePasswordMutation = () =>
   useMutation({ mutationFn: ({ password, accessToken }: { password: string; accessToken: string }) =>
     updatePassword(password, accessToken),
+  });
+
+export const useUpdateUserStatusMutation = () =>
+  useMutation({ mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
+    updateUserStatus(userId, isActive),
   });
 
 export const useMeQuery = () => {
