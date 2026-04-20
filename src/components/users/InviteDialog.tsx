@@ -5,7 +5,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { UserRoleSelect } from "./UsersControl";
 
-export const InviteDialog =({ open, onClose }: { open: boolean; onClose: () => void }) => {
+type InviteDialogProps = { open: boolean; onClose: () => void }
+type InvitationsEmptyStateProps = { onInvite: () => void }
+
+export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
   const mutation = useSendInvitationMutation();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
@@ -112,7 +115,7 @@ export const InviteDialog =({ open, onClose }: { open: boolean; onClose: () => v
   );
 }
 
-export const InvitationsEmptyState = ({ onInvite }: { onInvite: () => void }) => {
+export const InvitationsEmptyState: React.FC<InvitationsEmptyStateProps> = ({ onInvite }) => {
   return (
     <div className="flex flex-col items-center gap-4 py-20">
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/50 bg-muted/30">

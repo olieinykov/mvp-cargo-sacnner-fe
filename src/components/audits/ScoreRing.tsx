@@ -1,6 +1,8 @@
 import { BADGE } from "../../lib/utils/constants";
 
-export const ScoreRing = ({ score, passed }: { score: number; passed: boolean }) => {
+type ScoreRingProps = { score: number; passed: boolean }
+
+export const ScoreRing: React.FC<ScoreRingProps> = ({ score, passed }) => {
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;

@@ -1,13 +1,22 @@
-export const EmptyState = ({
+import React from "react";
+
+type EmptyStateAction = {
+  label: string;
+  onClick: () => void;
+};
+
+type EmptyStateProps = {
+  icon: 'link' | 'x';
+  title: string;
+  description: string;
+  action: EmptyStateAction;
+};
+
+export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
   title,
   description,
   action,
-}: {
-  icon: 'link' | 'x';
-  title: string;
-  description: string;
-  action: { label: string; onClick: () => void };
 }) => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-primary/[0.03] p-4">

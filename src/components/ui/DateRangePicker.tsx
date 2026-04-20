@@ -3,21 +3,7 @@ import { formatLabel, isoDate } from "../../lib/utils/date";
 
 type DateRange = { from: string | undefined; to: string | undefined };
 
-const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
-];
-const DOW = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-
-export const CalendarMonth = ({
-  year,
-  month,
-  from,
-  to,
-  hovered,
-  onDayClick,
-  onDayHover,
-}: {
+type CalendarMonthProps = {
   year: number;
   month: number;
   from: string | undefined;
@@ -25,6 +11,29 @@ export const CalendarMonth = ({
   hovered: string | undefined;
   onDayClick: (iso: string) => void;
   onDayHover: (iso: string | undefined) => void;
+};
+
+type DateRangePickerProps = {
+  from: string | undefined;
+  to: string | undefined;
+  disabled: boolean;
+  onChange: (range: DateRange) => void;
+};
+
+const MONTHS = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December",
+];
+const DOW = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+export const CalendarMonth: React.FC<CalendarMonthProps> = ({
+  year,
+  month,
+  from,
+  to,
+  hovered,
+  onDayClick,
+  onDayHover,
 }) => {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -90,16 +99,11 @@ export const CalendarMonth = ({
   );
 }
 
-export const DateRangePicker = ({
+export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   from,
   to,
   disabled,
   onChange,
-}: {
-  from: string | undefined;
-  to: string | undefined;
-  disabled: boolean;
-  onChange: (range: DateRange) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [selecting, setSelecting] = React.useState<"from" | "to">("from");

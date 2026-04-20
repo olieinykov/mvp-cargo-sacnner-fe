@@ -1,13 +1,15 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSignInMutation } from "../../lib/api/auth";
 import { useAuthStore } from "../../lib/utils/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-export const SignInView = ({
-  onForgotPassword,
-}: {
+type SignInViewProps = {
   onForgotPassword: (email: string) => void;
+}
+
+export const SignInView: React.FC<SignInViewProps> = ({
+  onForgotPassword,
 }) => {
   const { login } = useAuthStore();
   const mutation = useSignInMutation();

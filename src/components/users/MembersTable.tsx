@@ -3,14 +3,16 @@ import { Skeleton } from "../ui/skeleton";
 import { Table, TableCell, TableHead, TableRow } from "../ui/table";
 import { RoleBadge } from "./RoleBadge";
 
-export const MembersTable = ({
-  users,
-  currentUserId,
-  onChangeRole,
-}: {
+type MembersTableProps = {
   users: CompanyUser[];
   currentUserId?: string;
   onChangeRole: (user: CompanyUser) => void;
+}
+
+export const MembersTable: React.FC<MembersTableProps> = ({
+  users,
+  currentUserId,
+  onChangeRole,
 }) => {
   return (
     <Table>

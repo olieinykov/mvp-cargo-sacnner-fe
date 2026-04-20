@@ -8,7 +8,7 @@ type LightboxProps = {
   onClose: () => void;
 };
 
-export const Lightbox = ({ images, initialIndex, onClose }: LightboxProps) => {
+export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClose }) => {
   const [index, setIndex] = React.useState(initialIndex);
 
   React.useEffect(() => {

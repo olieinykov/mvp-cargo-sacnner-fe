@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useRequestPasswordResetMutation } from "../../lib/api/auth";
 import { toast } from "sonner";
 
-export const ForgotPasswordView = ({
-  initialEmail,
-  onBack,
-}: {
+type ForgotPasswordViewProps = {
   initialEmail: string;
   onBack: () => void;
+}
+
+export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
+  initialEmail,
+  onBack,
 }) => {
   const [email, setEmail] = useState(initialEmail);
   const [sent, setSent] = useState(false);

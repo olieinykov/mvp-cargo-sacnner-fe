@@ -2,20 +2,22 @@ import type { AuditFilters, AuditStatus } from "../../lib/api/audits";
 import { DateRangePicker } from "../ui/DateRangePicker";
 import { SelectControl } from "../ui/SelectControl";
 
+type FiltersBarProps = {
+  filters: AuditFilters;
+  disabled: boolean;
+  onChange: (next: Partial<AuditFilters>) => void;
+}
+
 const STATUS_OPTIONS: { value: AuditStatus | ""; label: string }[] = [
   { value: "", label: "All statuses" },
   { value: "passed", label: "Passed" },
   { value: "failed", label: "Failed" },
 ];
 
-export const FiltersBar = ({
+export const FiltersBar: React.FC<FiltersBarProps> = ({
   filters,
   disabled,
   onChange,
-}: {
-  filters: AuditFilters;
-  disabled: boolean;
-  onChange: (next: Partial<AuditFilters>) => void;
 }) => {
   const hasActiveFilters = !!(filters.status || filters.dateFrom || filters.dateTo);
 

@@ -5,14 +5,16 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserRoleSelect } from "./UsersControl";
 
-export const ChangeRoleDialog = ({
-  user,
-  currentUserId,
-  onClose,
-}: {
+type ChangeRoleDialogProps = {
   user: CompanyUser | null;
   currentUserId?: string;
   onClose: () => void;
+}
+
+export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
+  user,
+  currentUserId,
+  onClose,
 }) => {
   const roleMutation   = useUpdateUserRoleMutation();
   const statusMutation = useUpdateUserStatusMutation();

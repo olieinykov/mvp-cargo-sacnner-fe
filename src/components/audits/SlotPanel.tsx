@@ -3,14 +3,16 @@ import { isExtractedField, isOtherNotes } from "../../lib/utils/typeGuard";
 import type { AuditImage, SlotExtracted, SlotResult } from "../../lib/utils/useAuditStore";
 import { ImageStrip } from "../common/ImageStrip";
 
-export const SlotPanel = ({
-  slots,
-  images,
-  onOpenLightbox,
-}: {
+type SlotPanelProps = {
   slots: SlotResult[];
   images: AuditImage[];
   onOpenLightbox: (images: AuditImage[], index: number) => void;
+}
+
+export const SlotPanel: React.FC<SlotPanelProps> = ({
+  slots,
+  images,
+  onOpenLightbox,
 }) => {
   const validSlots = slots?.filter(Boolean) ?? [];
 

@@ -1,12 +1,16 @@
-export const Field = ({
-  label, id, required, children,
-  hint,
-}: {
+import React from "react";
+
+type FieldProps = {
   label: string;
   id: string;
   required?: boolean;
   children: React.ReactNode;
   hint?: string;
+}
+
+export const Field: React.FC<FieldProps> = ({
+  label, id, required, children,
+  hint,
 }) => {
   return (
     <div className="flex flex-col gap-1.5">

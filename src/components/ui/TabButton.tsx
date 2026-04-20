@@ -1,13 +1,17 @@
-export const TabButton = ({
-  active,
-  onClick,
-  children,
-  count,
-}: {
+import React from "react";
+
+type TabButtonProps = {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
   count?: number;
+}
+
+export const TabButton: React.FC<TabButtonProps> = ({
+  active,
+  onClick,
+  children,
+  count,
 }) => {
   return (
     <button

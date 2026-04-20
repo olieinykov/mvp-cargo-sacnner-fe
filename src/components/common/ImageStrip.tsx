@@ -6,7 +6,7 @@ type ImageStripProps = {
   onOpen: (images: AuditImage[], index: number) => void;
 };
 
-export const ImageStrip = ({ images, onOpen }: ImageStripProps) => {
+export const ImageStrip: React.FC<ImageStripProps> = ({ images, onOpen }) => {
   if (!images.length) return null;
 
   return (

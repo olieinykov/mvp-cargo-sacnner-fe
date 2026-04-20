@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import type { UserRole } from "../../lib/api/auth";
 
+type UserRoleSelect = {
+  value: UserRole;
+  onChange: (v: UserRole) => void;
+  disabled?: boolean;
+}
+
 interface Option {
   value: UserRole;
   label: string;
@@ -11,14 +17,10 @@ const OPTIONS: Option[] = [
   { value: 'admin', label: 'Admin' }
 ];
 
-export const UserRoleSelect = ({
+export const UserRoleSelect: React.FC<UserRoleSelect> = ({
   value,
   onChange,
   disabled
-}: {
-  value: UserRole;
-  onChange: (v: UserRole) => void;
-  disabled?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

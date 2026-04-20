@@ -1,17 +1,32 @@
 import React from "react";
 
+type LimitControlProps = {
+  value: number;
+  onChange: (n: number) => void;
+  disabled: boolean;
+}
+
+type SelectOption<T> = {
+  value: T;
+  label: string;
+};
+
+type SelectControlProps<T extends string> = {
+  value: T;
+  options: SelectOption<T>[];
+  onChange: (v: T) => void;
+  disabled: boolean;
+  label: string;
+};
+
 // ─── Rows-per-page custom select ───────────────────────────────────────────────
 
 const LIMIT_PRESETS = [10, 20, 50, 100];
 
-export const LimitControl = ({
+export const LimitControl: React.FC<LimitControlProps> = ({
   value,
   onChange,
   disabled,
-}: {
-  value: number;
-  onChange: (n: number) => void;
-  disabled: boolean;
 }) => {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -111,13 +126,7 @@ export const SelectControl = <T extends string>({
   onChange,
   disabled,
   label,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (v: T) => void;
-  disabled: boolean;
-  label: string;
-}) => {
+}: SelectControlProps<T>) => {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 

@@ -1,7 +1,9 @@
 import { BADGE, SEVERITY_CONFIG } from "../../lib/utils/constants";
 import type { AuditIssue } from "../../lib/utils/useAuditStore";
 
-export const IssueCard = ({ issue }: { issue: AuditIssue }) => {
+type IssueCardProps = { issue: AuditIssue }
+
+export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
   const cfg = SEVERITY_CONFIG[issue.severity];
   return (
     <div className="flex overflow-hidden rounded-lg border border-border/50 bg-background shadow-sm">

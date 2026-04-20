@@ -1,19 +1,21 @@
 import React from "react";
 
-export const Pagination = ({
-  page,
-  totalPages,
-  hasPrev,
-  hasNext,
-  disabled,
-  onPageChange,
-}: {
+type PaginationProps = {
   page: number;
   totalPages: number;
   hasPrev: boolean;
   hasNext: boolean;
   disabled: boolean;
   onPageChange: (p: number) => void;
+}
+
+export const Pagination: React.FC<PaginationProps> = ({
+  page,
+  totalPages,
+  hasPrev,
+  hasNext,
+  disabled,
+  onPageChange,
 }) => {
   const pages = React.useMemo(() => {
     if (totalPages <= 7)

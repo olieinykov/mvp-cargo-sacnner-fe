@@ -1,15 +1,18 @@
+import React from "react";
 import { cn } from "../../lib/utils/cn";
 
-export const NavItem = ({
-  icon,
-  label,
-  active,
-  onClick,
-}: {
+type NavItemProps = {
   icon: React.ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;
+}
+
+export const NavItem: React.FC<NavItemProps> = ({
+  icon,
+  label,
+  active,
+  onClick,
 }) => {
   return (
     <button

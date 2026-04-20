@@ -7,7 +7,9 @@ import { Table, TableCell, TableHead, TableRow } from "../ui/table";
 import { RoleBadge } from "./RoleBadge";
 import { Skeleton } from "../ui/skeleton";
 
-export const InvitationsTable = ({ invitations }: { invitations: PendingInvitation[] }) => {
+type InvitationsTableProps = { invitations: PendingInvitation[] }
+
+export const InvitationsTable: React.FC<InvitationsTableProps> = ({ invitations }) => {
   const cancelMutation  = useCancelInvitationMutation();
   const resendMutation  = useResendInvitationMutation();
   const queryClient     = useQueryClient();
