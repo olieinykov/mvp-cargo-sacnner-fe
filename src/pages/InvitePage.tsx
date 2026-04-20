@@ -40,6 +40,14 @@ export const InvitePage: React.FC<Props> = ({ token }) => {
     if (!invite || !token) return;
 
     try {
+      await mutation.mutateAsync({
+      email: invite.email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      inviteToken: token,
+      });
+
       toast.success(`Welcome to ${invite.company.name}! Please sign in.`);
       navigate('sign-in');
     } catch (err) {
