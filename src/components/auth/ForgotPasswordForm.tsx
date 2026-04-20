@@ -32,14 +32,14 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path 
               d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8" 
-              stroke="currentColor" 
+              stroke="#059669" 
               strokeWidth="1.8" 
               strokeLinecap="round" 
               strokeLinejoin="round"
             />
             <path 
               d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" 
-              stroke="currentColor" 
+              stroke="#059669" 
               strokeWidth="1.8" 
               strokeLinecap="round" 
               strokeLinejoin="round"
