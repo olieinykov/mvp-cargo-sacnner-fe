@@ -3,6 +3,7 @@ import { useSendInvitationMutation } from "../../lib/api/auth";
 import type { UserRole } from "../../lib/api/auth";
 import { useState } from "react";
 import { toast } from "sonner";
+import { UserRoleSelect } from "./UsersControl";
 
 export const InviteDialog =({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const mutation = useSendInvitationMutation();
@@ -33,7 +34,7 @@ export const InviteDialog =({ open, onClose }: { open: boolean; onClose: () => v
         role="dialog"
         aria-modal="true"
         aria-labelledby="invite-dialog-title"
-        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 shadow-xl"
+        className="fixed pb-8 left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 shadow-xl"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
@@ -73,24 +74,15 @@ export const InviteDialog =({ open, onClose }: { open: boolean; onClose: () => v
           <div className="flex flex-col gap-1.5">
             <label htmlFor="invite-role" className="text-sm font-medium text-foreground">Role</label>
             <div className="flex gap-2">
-              {(['user', 'admin'] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  className={`flex h-9 flex-1 items-center justify-center rounded-lg border text-sm font-medium capitalize transition-all ${
-                    role === r
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-border text-muted-foreground hover:bg-muted'
-                  }`}
-                >
-                  {r}
-                </button>
-              ))}
+             <UserRoleSelect 
+                value={role} 
+                onChange={setRole} 
+                disabled={mutation.isPending} 
+              />
             </div>
           </div>
 
-          <div className="mt-1 flex gap-2">
+          <div className="mt-2 flex gap-2">
             <button
               type="button"
               onClick={onClose}
