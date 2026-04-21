@@ -77,8 +77,12 @@ export const InvitationsTable: React.FC<InvitationsTableProps> = ({ invitations 
               <TableCell>
                 <span className={`text-sm ${isExpired ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
                   {isExpired ? 'Expired · ' : ''}
-                  {new Date(inv.expiresAt).toLocaleDateString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric',
+                  {new Date(inv.expiresAt).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
                   })}
                 </span>
               </TableCell>

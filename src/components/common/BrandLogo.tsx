@@ -7,6 +7,6 @@ export const BrandLogo = () => {
               <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">HazmatAudit</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">Hazmat Load Audit System</h1>
         </div>
 }
