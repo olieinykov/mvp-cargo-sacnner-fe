@@ -91,11 +91,13 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
     },
   });
 
+  const { resetForm } = formik;
+
   useEffect(() => {
     if (!open && !isPendingRef.current) {
-      formik.resetForm();
+      resetForm();
     }
-  }, [open, formik]);
+  }, [open, resetForm]);
 
   if (!open) return null;
 
