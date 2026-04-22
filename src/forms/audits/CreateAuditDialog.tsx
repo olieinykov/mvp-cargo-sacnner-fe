@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import { z } from "zod";
 import { Modal } from "../../components/ui/dialog";
@@ -51,6 +51,12 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
 
   const isPending = uploadMutation.isPending || createAuditMutation.isPending;
 
+  const isPendingRef = useRef(isPending);
+
+  useEffect(() => {
+    isPendingRef.current = isPending;
+  }, [isPending]);
+
   const currentStep: Step = uploadMutation.isPending
     ? "uploading"
     : createAuditMutation.isPending
@@ -84,6 +90,12 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
       }
     },
   });
+
+  useEffect(() => {
+    if (!open && !isPendingRef.current) {
+      formik.resetForm();
+    }
+  }, [open, formik]);
 
   if (!open) return null;
 
@@ -162,6 +174,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
           error={showError ? imageError : undefined}
           onBlur={formik.handleBlur}
           helpText="BOL documents · Placard photos · Cargo interior shots"
+          disabled={isPending}
         />
       </form>
     </Modal>

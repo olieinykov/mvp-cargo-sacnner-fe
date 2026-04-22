@@ -38,10 +38,10 @@ export const FiltersBar: React.FC<FiltersBarProps> = ({
         to={filters.dateTo ? filters.dateTo.slice(0, 10) : undefined}
         disabled={disabled}
         onChange={({ from, to }) =>
-          onChange({
-            dateFrom: from ? `${from}T00:00:00Z` : undefined,
-            dateTo: to ? `${to}T23:59:59Z` : undefined,
-          })
+         onChange({
+            dateFrom: from ? new Date(`${from}T00:00:00`).toISOString() : undefined,
+            dateTo: to ? new Date(`${to}T23:59:59.999`).toISOString() : undefined,
+         })
         }
       />
 

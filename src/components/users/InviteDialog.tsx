@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useSendInvitationMutation } from "../../lib/api/auth";
 import type { UserRole } from "../../lib/api/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { UserRoleSelect } from "./UsersControl";
 
@@ -27,6 +27,13 @@ export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
       toast.error((err as Error).message ?? 'Failed to send invitation');
     }
   };
+
+  useEffect(() => {
+    if (!open) {
+      setEmail('');
+      setRole('user');
+    }
+  }, [open]);
 
   if (!open) return null;
 

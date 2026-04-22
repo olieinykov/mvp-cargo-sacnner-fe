@@ -10,6 +10,7 @@ type ImageFilesFieldProps = {
   error?: string;
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
   helpText?: string;
+  disabled?: boolean
 };
 
 type PreviewItem = {
@@ -128,6 +129,7 @@ export const ImageFilesField: React.FC<ImageFilesFieldProps> = ({
   error,
   onBlur,
   helpText,
+  disabled
 }) => {
   const [previews, setPreviews] = useState<PreviewItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -325,8 +327,9 @@ export const ImageFilesField: React.FC<ImageFilesFieldProps> = ({
             </p>
             <button
               type="button"
+              disabled={disabled}
               onClick={() => onFilesChange([])}
-              className="text-[11px] text-muted-foreground underline-offset-2 transition-colors hover:text-destructive hover:underline"
+              className="text-[11px] text-muted-foreground underline-offset-2 transition-colors hover:text-destructive hover:underline disabled:pointer-events-none disabled:opacity-50"
             >
               Clear all
             </button>
