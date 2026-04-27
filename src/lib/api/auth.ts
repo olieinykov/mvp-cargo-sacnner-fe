@@ -84,6 +84,7 @@ export type CompanyUser = {
   companyId: string;
   registrationData: string;
   isActive: boolean;
+  isOwner?: boolean;
 };
 
 export type PendingInvitation = {

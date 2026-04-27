@@ -41,6 +41,11 @@ export const MembersTable: React.FC<MembersTableProps> = ({
                   {user.id === currentUserId && (
                     <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>
                   )}
+                  {user.isOwner && user.id !== currentUserId && (
+                    <span className="ml-1.5 text-xs text-muted-foreground">
+                      (owner)
+                    </span>
+                  )}
                 </span>
               </div>
             </TableCell>
@@ -68,7 +73,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({
               })}
             </TableCell>
             <TableCell>
-              {user.id === currentUserId ? null : <button
+              {user.isOwner || user.id === currentUserId ? null : <button
                 type="button"
                 onClick={() => onChangeRole(user)}
                 className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"

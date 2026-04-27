@@ -32,7 +32,9 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
 
   if (!user) return null;
 
+  const isOwner = user.isOwner;
   const isSelf      = currentUserId === user.id;
+  const isDisabled = isSelf || isOwner;
   const roleChanged = role !== user.role;
   const statusChanged = isActive !== user.isActive;
   const hasChanges  = roleChanged || statusChanged;
@@ -75,7 +77,7 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
             <h2 id="role-dialog-title" className="text-base font-semibold text-foreground">
               Edit member
             </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName} · {user.email}
             </p>
           </div>
@@ -100,7 +102,7 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
             <UserRoleSelect
               value={role}
               onChange={setRole}
-              disabled={isSelf}
+              disabled={isDisabled}
             />
             {isSelf && (
               <p className="text-xs text-muted-foreground">You cannot change your own role.</p>
@@ -119,7 +121,7 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
               type="button"
               role="switch"
               aria-checked={isActive}
-              disabled={isSelf}
+              disabled={isDisabled}
               onClick={() => setIsActive((v) => !v)}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
                 isActive ? 'bg-primary' : 'bg-muted'
