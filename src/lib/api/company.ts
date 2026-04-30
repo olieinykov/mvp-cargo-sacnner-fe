@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { globalLogout } from '../utils/useAuthStore';
 
-const BASE = `http://localhost:3000/api/v1/companies`;
+//const BASE = `http://localhost:3000/api/v1/companies`;
+const BASE = `${import.meta.env.VITE_API_URL}/companies`;
 //const BASE = `${BASE}/companies`;
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
