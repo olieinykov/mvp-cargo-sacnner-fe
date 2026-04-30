@@ -11,6 +11,8 @@ import { UpdatePasswordPage } from './pages/UpdatePasswordPage';
 import { Navigate, Outlet, Route, Routes, useSearchParams } from 'react-router-dom';
 import { ProtectedRoute, PublicRoute } from './components/routing/ProtectGuard';
 import { useMeQuery } from './lib/api/auth';
+import { CompanyDetailsPage } from './pages/CompanyDetailsPage';
+import { CompanyInspectionsPage } from './pages/CompanyInspectionsPage';
 
 const AppLayout = () => {
   return (
@@ -62,7 +64,8 @@ const App: React.FC = () => {
                 )
               } 
             />
-            
+            <Route path="/company" element={<CompanyDetailsPage />} />
+            <Route path="/company/inspections" element={<CompanyInspectionsPage />} />
             <Route path="*" element={<Navigate to="/audits" replace />} />
           </Route>
         </Route>

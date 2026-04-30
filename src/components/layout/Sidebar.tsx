@@ -42,6 +42,19 @@ const UsersIcon: React.FC = () => (
   </svg>
 );
 
+const CompanyIcon: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M3 21h18M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16M9 7h6M9 11h6M9 15h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const InspectionsIcon: React.FC = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const LogoutIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -95,12 +108,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           onClick={() => navigate('/audits')}
         />
         {isAdmin && (
-          <NavItem
-            icon={<UsersIcon />}
-            label="Team"
-            active={pathname === '/users'}
-            onClick={() => navigate('/users')}
-          />
+          <>
+            <NavItem
+              icon={<UsersIcon />}
+              label="Team"
+              active={pathname === '/users'}
+              onClick={() => navigate('/users')}
+            />
+            <NavItem
+              icon={<CompanyIcon />}
+              label="Company Details"
+              active={pathname === '/company'}
+              onClick={() => navigate('/company')}
+            />
+            <NavItem
+              icon={<InspectionsIcon />}
+              label="Company Inspections"
+              active={pathname === '/company/inspections'}
+              onClick={() => navigate('/company/inspections')}
+            />
+          </>
         )}
       </nav>
 
