@@ -1,5 +1,5 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuthStore } from "../../lib/utils/useAuthStore";
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../../lib/utils/useAuthStore';
 
 export const ProtectedRoute = () => {
   const { isLoggedIn } = useAuthStore();
@@ -14,7 +14,7 @@ export const ProtectedRoute = () => {
 
 export const PublicRoute = () => {
   const { isLoggedIn } = useAuthStore();
-  
+
   if (isLoggedIn) {
     return <Navigate to="/audits" replace />;
   }

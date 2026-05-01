@@ -1,6 +1,6 @@
-import React from "react";
-import type { AuditImage } from "../../lib/utils/useAuditStore";
-import { IMAGE_TYPE_LABEL } from "../../lib/utils/constants";
+import React from 'react';
+import type { AuditImage } from '../../lib/utils/useAuditStore';
+import { IMAGE_TYPE_LABEL } from '../../lib/utils/constants';
 
 type LightboxProps = {
   images: AuditImage[];
@@ -18,7 +18,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClos
         onClose();
       }
       if (e.key === 'ArrowRight') setIndex((i) => (i + 1) % images.length);
-      if (e.key === 'ArrowLeft')  setIndex((i) => (i - 1 + images.length) % images.length);
+      if (e.key === 'ArrowLeft') setIndex((i) => (i - 1 + images.length) % images.length);
     };
     // capture phase so we intercept before Radix does
     window.addEventListener('keydown', handler, { capture: true });
@@ -53,7 +53,12 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClos
             aria-label="Close lightbox"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
@@ -76,7 +81,13 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClos
               aria-label="Previous image"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M15 18l-6-6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <button
@@ -86,7 +97,13 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClos
               aria-label="Next image"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M9 18l6-6-6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </>
@@ -111,4 +128,4 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, initialIndex, onClos
       </div>
     </div>
   );
-}
+};

@@ -1,40 +1,55 @@
-import React from "react";
-import { isExtractedField, isOtherNotes } from "../../lib/utils/typeGuard";
-import type { AuditImage, SlotExtracted, SlotResult } from "../../lib/utils/useAuditStore";
-import { ImageStrip } from "../common/ImageStrip";
+import React from 'react';
+import { isExtractedField, isOtherNotes } from '../../lib/utils/typeGuard';
+import type { AuditImage, SlotExtracted, SlotResult } from '../../lib/utils/useAuditStore';
+import { ImageStrip } from '../common/ImageStrip';
 
 type SlotPanelProps = {
   slots: SlotResult[];
   images: AuditImage[];
   onOpenLightbox: (images: AuditImage[], index: number) => void;
-}
+};
 
-export const SlotPanel: React.FC<SlotPanelProps> = ({
-  slots,
-  images,
-  onOpenLightbox,
-}) => {
+export const SlotPanel: React.FC<SlotPanelProps> = ({ slots, images, onOpenLightbox }) => {
   const validSlots = slots?.filter(Boolean) ?? [];
 
   if (!validSlots.length && !images.length) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10 text-muted-foreground">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" className="text-muted-foreground/40" aria-hidden="true">
+        <svg
+          width="36"
+          height="36"
+          viewBox="0 0 24 24"
+          fill="none"
+          className="text-muted-foreground/40"
+          aria-hidden="true"
+        >
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M8 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M8 12h8"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
         <p className="text-sm">No data or images available for this category.</p>
       </div>
     );
   }
 
-  const avgConfidence = validSlots.length > 0
-    ? Math.round((validSlots.reduce((sum, s) => sum + (s.confidence?.overall ?? 0), 0) / validSlots.length) * 100)
-    : null;
+  const avgConfidence =
+    validSlots.length > 0
+      ? Math.round(
+          (validSlots.reduce((sum, s) => sum + (s.confidence?.overall ?? 0), 0) /
+            validSlots.length) *
+            100,
+        )
+      : null;
 
-  const allKeys = validSlots.length > 0 && validSlots[0].extracted
-    ? Object.keys(validSlots[0].extracted as SlotExtracted)
-    : [];
+  const allKeys =
+    validSlots.length > 0 && validSlots[0].extracted
+      ? Object.keys(validSlots[0].extracted as SlotExtracted)
+      : [];
 
   return (
     <div className="space-y-1">
@@ -48,7 +63,9 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
               style={{ width: `${avgConfidence}%` }}
             />
           </div>
-          <span className="shrink-0 tabular-nums text-xs font-semibold text-foreground">{avgConfidence}%</span>
+          <span className="shrink-0 tabular-nums text-xs font-semibold text-foreground">
+            {avgConfidence}%
+          </span>
         </div>
       )}
 
@@ -68,7 +85,8 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
             const raw = (s.extracted as SlotExtracted).otherNotes;
             if (!isOtherNotes(raw)) return [];
             return raw.filter(
-              (n) => typeof n === 'object' && n !== null && n.sign_name?.trim() && n.meaning?.trim(),
+              (n) =>
+                typeof n === 'object' && n !== null && n.sign_name?.trim() && n.meaning?.trim(),
             );
           });
           if (!allNotes.length) return null;
@@ -103,16 +121,19 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
         const valueTokens: string[] | null = (() => {
           if (nonNull.length === 0) return null;
           if (isBoolField) return [(nonNull as boolean[]).some(Boolean) ? 'Yes' : 'No'];
-          
+
           if (key === 'properShippingName') {
             const seen = new Set<string>();
-            nonNull.forEach(v => seen.add(String(v).trim()));
+            nonNull.forEach((v) => seen.add(String(v).trim()));
             return [...seen];
           }
 
           if (key === 'unNumber') {
             const parts = nonNull.flatMap((v) =>
-              String(v).split(/[;,]+/).map((s) => s.trim().toUpperCase()).filter(Boolean)
+              String(v)
+                .split(/[;,]+/)
+                .map((s) => s.trim().toUpperCase())
+                .filter(Boolean),
             );
             const seen = new Set<string>();
             for (let part of parts) {
@@ -126,7 +147,10 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
           }
 
           const parts = nonNull.flatMap((v) =>
-            String(v).split(/[;,]+/).map((s) => s.trim()).filter(Boolean)
+            String(v)
+              .split(/[;,]+/)
+              .map((s) => s.trim())
+              .filter(Boolean),
           );
           const seen = new Map<string, string>();
           for (const part of parts) {
@@ -140,8 +164,10 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
           valueTokens === null
             ? 'text-muted-foreground/50'
             : isBoolField
-            ? valueTokens[0] === 'Yes' ? 'text-emerald-600' : 'text-red-500'
-            : 'text-foreground';
+              ? valueTokens[0] === 'Yes'
+                ? 'text-emerald-600'
+                : 'text-red-500'
+              : 'text-foreground';
 
         const meanings = fields
           .map((f) => f.meaning)
@@ -161,26 +187,36 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
               {uniqueMeanings.length > 0 && (
                 <div className="mt-0.5 space-y-0.5">
                   {uniqueMeanings.map((m, i) => (
-                    <p key={i} className="text-xs text-muted-foreground">{m}</p>
+                    <p key={i} className="text-xs text-muted-foreground">
+                      {m}
+                    </p>
                   ))}
                 </div>
               )}
             </div>
             {valueTokens === null ? (
-              <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground/50">—</span>
+              <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground/50">
+                —
+              </span>
             ) : isMultiToken ? (
               <div className="flex flex-wrap justify-end gap-1 max-w-[55%]">
                 {valueTokens.map((token, i) => (
                   <React.Fragment key={i}>
-                    <span className={`text-xs font-medium tabular-nums ${valueColor}`}>{token}</span>
+                    <span className={`text-xs font-medium tabular-nums ${valueColor}`}>
+                      {token}
+                    </span>
                     {i < valueTokens.length - 1 && (
-                      <span className="text-xs font-medium tabular-nums text-muted-foreground">;</span>
+                      <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                        ;
+                      </span>
                     )}
                   </React.Fragment>
                 ))}
               </div>
             ) : (
-              <span className={`text-xs font-semibold text-right max-w-[60%] break-words ${valueColor} ${key !== 'properShippingName' ? 'shrink-0 tabular-nums' : ''}`}>
+              <span
+                className={`text-xs font-semibold text-right max-w-[60%] break-words ${valueColor} ${key !== 'properShippingName' ? 'shrink-0 tabular-nums' : ''}`}
+              >
                 {valueTokens[0]}
               </span>
             )}
@@ -189,4 +225,4 @@ export const SlotPanel: React.FC<SlotPanelProps> = ({
       })}
     </div>
   );
-}
+};

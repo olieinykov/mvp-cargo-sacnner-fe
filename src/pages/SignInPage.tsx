@@ -19,7 +19,6 @@ export const SignInPage: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-primary/[0.03] p-4">
       <div className="w-full max-w-sm">
-
         {/* Logo / brand mark */}
         <BrandLogo />
 
@@ -28,10 +27,7 @@ export const SignInPage: React.FC = () => {
           {view === 'signin' ? (
             <SignInView onForgotPassword={handleForgotPassword} />
           ) : (
-            <ForgotPasswordView
-              initialEmail={forgotEmail}
-              onBack={() => setView('signin')}
-            />
+            <ForgotPasswordView initialEmail={forgotEmail} onBack={() => setView('signin')} />
           )}
         </div>
 

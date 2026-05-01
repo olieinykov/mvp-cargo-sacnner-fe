@@ -87,15 +87,14 @@ export type StoredAudit = {
 export function useAuditStore(auditorId: string) {
   const queryClient = useQueryClient();
 
-  const [page,    setPage]    = useState(1);
-  const [limit,   setLimit]   = useState(20);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [filters, setFilters] = useState<AuditFilters>({
-    sortBy:    'date',
+    sortBy: 'date',
     sortOrder: 'desc',
   });
 
-  const { data, isLoading: loading, error } =
-    useAuditsQuery(page, limit, auditorId, filters);
+  const { data, isLoading: loading, error } = useAuditsQuery(page, limit, auditorId, filters);
 
   const updateFilters = useCallback((next: Partial<AuditFilters>) => {
     setPage(1);
@@ -107,19 +106,22 @@ export function useAuditStore(auditorId: string) {
     setLimit(newLimit);
   }, []);
 
-  const audits: StoredAudit[]            = data?.audits     ?? [];
+  const audits: StoredAudit[] = data?.audits ?? [];
   const pagination: Pagination | undefined = data?.pagination;
 
-  const addAudit = useCallback((response: ServerAuditResponse): StoredAudit => {
-    const record: StoredAudit = {
-      id:          response.id ?? crypto.randomUUID(),
-      createdAt:   new Date().toISOString(),
-      response,
-      auditImages: response.auditImages ?? [],
-    };
-    queryClient.invalidateQueries({ queryKey: ['audits'] });
-    return record;
-  }, [queryClient]);
+  const addAudit = useCallback(
+    (response: ServerAuditResponse): StoredAudit => {
+      const record: StoredAudit = {
+        id: response.id ?? crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        response,
+        auditImages: response.auditImages ?? [],
+      };
+      queryClient.invalidateQueries({ queryKey: ['audits'] });
+      return record;
+    },
+    [queryClient],
+  );
 
   const refetch = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['audits'] });
@@ -128,7 +130,7 @@ export function useAuditStore(auditorId: string) {
   return {
     audits,
     loading,
-    error:      error ? (error as Error).message : null,
+    error: error ? (error as Error).message : null,
     pagination,
     page,
     limit,

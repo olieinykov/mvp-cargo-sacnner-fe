@@ -1,22 +1,17 @@
-import React, { useEffect, useRef } from "react";
-import { useFormik } from "formik";
-import { z } from "zod";
-import { Modal } from "../../components/ui/dialog";
-import { Button } from "../../components/ui/button";
-import {
-  useUploadImagesMutation,
-  useCreateAuditMutation,
-} from "../../lib/api/audits";
-import { ImageFilesField } from "./ImageFilesField";
-import type { ServerAuditResponse } from "../../lib/utils/useAuditStore";
-import { useMeQuery } from "../../lib/api/auth";
+import React, { useEffect, useRef } from 'react';
+import { useFormik } from 'formik';
+import { z } from 'zod';
+import { Modal } from '../../components/ui/dialog';
+import { Button } from '../../components/ui/button';
+import { useUploadImagesMutation, useCreateAuditMutation } from '../../lib/api/audits';
+import { ImageFilesField } from './ImageFilesField';
+import type { ServerAuditResponse } from '../../lib/utils/useAuditStore';
+import { useMeQuery } from '../../lib/api/auth';
 
 const fileSchema = z.instanceof(File);
 
 const auditSchema = z.object({
-  images: z
-    .array(fileSchema)
-    .min(1, "Upload at least one image to begin the audit"),
+  images: z.array(fileSchema).min(1, 'Upload at least one image to begin the audit'),
 });
 
 type AuditFormValues = z.infer<typeof auditSchema>;
@@ -27,16 +22,16 @@ type CreateAuditDialogProps = {
   onAuditCreated: (response: ServerAuditResponse) => void;
 };
 
-const CREATE_AUDIT_FORM_ID = "create-audit-form";
+const CREATE_AUDIT_FORM_ID = 'create-audit-form';
 
 const initialValues: AuditFormValues = { images: [] };
 
-type Step = "idle" | "uploading" | "analyzing";
+type Step = 'idle' | 'uploading' | 'analyzing';
 
 const STEP_LABEL: Record<Step, string> = {
-  idle:      "Run Audit",
-  uploading: "Uploading…",
-  analyzing: "Analyzing…",
+  idle: 'Run Audit',
+  uploading: 'Uploading…',
+  analyzing: 'Analyzing…',
 };
 
 export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
@@ -45,7 +40,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   onAuditCreated,
 }) => {
   const { data: user } = useMeQuery();
-  const auditorId = user?.companyId ?? "";
+  const auditorId = user?.companyId ?? '';
   const uploadMutation = useUploadImagesMutation();
   const createAuditMutation = useCreateAuditMutation();
 
@@ -58,10 +53,10 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
   }, [isPending]);
 
   const currentStep: Step = uploadMutation.isPending
-    ? "uploading"
+    ? 'uploading'
     : createAuditMutation.isPending
-      ? "analyzing"
-      : "idle";
+      ? 'analyzing'
+      : 'idle';
 
   const formik = useFormik<AuditFormValues>({
     initialValues,
@@ -101,10 +96,8 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
 
   if (!open) return null;
 
-  const showError  = formik.submitCount > 0 || Boolean(formik.touched.images);
-  const imageError = typeof formik.errors.images === "string"
-    ? formik.errors.images
-    : undefined;
+  const showError = formik.submitCount > 0 || Boolean(formik.touched.images);
+  const imageError = typeof formik.errors.images === 'string' ? formik.errors.images : undefined;
 
   const count = formik.values.images.length;
 
@@ -115,8 +108,8 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
       title="New Audit"
       description={
         count === 0
-          ? "Upload shipment images — BOL, placards, and cargo photos."
-          : `${count} image${count === 1 ? "" : "s"} selected — AI will classify and analyze each one.`
+          ? 'Upload shipment images — BOL, placards, and cargo photos.'
+          : `${count} image${count === 1 ? '' : 's'} selected — AI will classify and analyze each one.`
       }
       footer={
         <>
@@ -172,7 +165,7 @@ export const CreateAuditDialog: React.FC<CreateAuditDialogProps> = ({
           id="images"
           label="Shipment images"
           files={formik.values.images}
-          onFilesChange={(files) => formik.setFieldValue("images", files)}
+          onFilesChange={(files) => formik.setFieldValue('images', files)}
           error={showError ? imageError : undefined}
           onBlur={formik.handleBlur}
           helpText="BOL documents · Placard photos · Cargo interior shots"

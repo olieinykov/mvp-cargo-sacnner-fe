@@ -42,15 +42,14 @@ export function useAuthStore() {
   useEffect(() => {
     const notify = () => rerender((n) => n + 1);
     _listeners.add(notify);
-    return () => { _listeners.delete(notify); };
+    return () => {
+      _listeners.delete(notify);
+    };
   }, []);
 
-  const login = useCallback(
-    (accessToken: string) => {
-      setState({ accessToken });
-    },
-    [],
-  );
+  const login = useCallback((accessToken: string) => {
+    setState({ accessToken });
+  }, []);
 
   const logout = useCallback(() => {
     setState({ accessToken: null });
@@ -58,7 +57,7 @@ export function useAuthStore() {
 
   return {
     accessToken: _state.accessToken,
-    isLoggedIn:  !!_state.accessToken,
+    isLoggedIn: !!_state.accessToken,
     login,
     logout,
   };
