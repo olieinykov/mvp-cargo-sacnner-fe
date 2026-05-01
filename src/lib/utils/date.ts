@@ -13,3 +13,9 @@ export function formatLabel(from: string | undefined, to: string | undefined): s
   if (from) return `From ${fmt(from)}`;
   return `To ${fmt(to!)}`;
 }
+
+export function fmtDate(v: string | null): string {
+  if (!v) return '—';
+  const d = new Date(v);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}

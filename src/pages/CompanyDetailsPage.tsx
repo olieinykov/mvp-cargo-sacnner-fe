@@ -1,133 +1,14 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { useFormik } from 'formik';
-
 import { Card, CardHeader, CardContent } from '../components/ui/card';
 import { useCompanyHazmatQuery, useCompanyQuery, useUpdateCompanyMutation } from '../lib/api/company';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCompanyUsersQuery, useMeQuery } from '../lib/api/auth';
-
-// ─── Validation ────────────────────────────────────────────────────────────────
-
-function validateCompanyForm(values: { name: string; dotNumber: string; mcNumber: string }) {
-  const errors: Partial<typeof values> = {};
-  if (!values.name.trim()) errors.name = 'Company name is required.';
-  if (!values.dotNumber.trim()) errors.dotNumber = 'DOT number is required.';
-  else if (!/^[0-9]+$/.test(values.dotNumber.trim())) errors.dotNumber = 'DOT number must contain only digits.';
-  if (values.mcNumber.trim() && !/^[0-9]+$/.test(values.mcNumber.trim())) errors.mcNumber = 'MC number must contain only digits.';
-  return errors;
-}
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-
-function FormField({
-  label,
-  id,
-  value,
-  onChange,
-  onBlur,
-  error,
-  touched,
-  disabled,
-  placeholder,
-}: {
-  label: string;
-  id: string;
-  value: string;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  onBlur: React.FocusEventHandler<HTMLInputElement>;
-  error?: string;
-  touched?: boolean;
-  disabled: boolean;
-  placeholder?: string;
-}) {
-  const showError = touched && !!error;
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-        {label}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type="text"
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        disabled={disabled}
-        placeholder={placeholder ?? ''}
-        className={[
-          'w-full rounded-lg border bg-background px-3 py-2 text-sm text-foreground outline-none ring-offset-background transition-colors',
-          'focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60',
-          showError ? 'border-red-400 focus:ring-red-300' : 'border-border',
-        ].join(' ')}
-      />
-      {showError && (
-        <p className="text-xs text-red-500">{error}</p>
-      )}
-    </div>
-  );
-}
-
-function StaticInfoRow({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 rounded-xl border border-border/40 bg-muted/10 px-4 py-3.5">
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-          {label}
-        </span>
-        <div className="text-sm font-medium text-foreground/90">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-function HazmatBadge({ status }: { status: 'Y' | 'N' | null | 'loading' | 'error' }) {
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-        Checking FMCSA…
-      </div>
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-500 ring-1 ring-inset ring-zinc-200">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-        Not found in FMCSA
-      </span>
-    );
-  }
-
-  if (status === 'Y') {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
-        Authorized for Hazmat
-      </span>
-    );
-  }
-
-  if (status === 'N') {
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" aria-hidden="true" />
-        Not Authorized for Hazmat
-      </span>
-    );
-  }
-
-  return <span className="text-xs text-muted-foreground/50 italic">Unknown</span>;
-}
+import { validateCompanyForm } from '../lib/utils/typeGuard';
+import { FormField } from '../components/ui/FormField';
+import { StaticInfoRow } from '../components/ui/InfoRow';
+import { HazmatBadge } from '../components/company/HazmatBadge';
 
 // ─── Page ───────────────────────────────────────────────────────────────────────
 
@@ -226,7 +107,7 @@ export const CompanyDetailsPage: React.FC = () => {
   if (!company) return null;
 
   return (
-    <section className="flex h-full flex-col gap-4 overflow-auto">
+    <section className="flex flex-col gap-4">
       <Card className="flex flex-col">
         <CardHeader className="flex shrink-0 items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">Company Details</h2>

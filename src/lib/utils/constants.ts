@@ -37,3 +37,24 @@ export const IMAGE_TYPE_LABEL: Record<AuditImageType, string> = {
   cargo:   'Cargo',
   seal:    'Seal',
 };
+
+export const INSP_LEVEL_LABELS: Record<number, string> = {
+  1: 'Full',
+  2: 'Walk-Around',
+  3: 'Driver-Only',
+  4: 'Special Study',
+  5: 'Terminal',
+  99: 'Invalid',
+};
+
+export const CI_STATUS_LABELS: Record<string, string> = {
+  U: 'Unprocessed',
+  T: 'To Census Search',
+  C: 'Complete',
+  D: 'Duplicate',
+  N: 'Non-match',
+  H: 'FMCSA Hold',
+  I: 'Intrastate',
+  P: 'Potential Resolution',
+  X: 'Non-motor carrier',
+};
