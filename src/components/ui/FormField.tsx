@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type FieldProps = {
   label: string;
@@ -6,7 +6,7 @@ type FieldProps = {
   required?: boolean;
   children: React.ReactNode;
   hint?: string;
-}
+};
 
 type FormFieldProps = {
   label: string;
@@ -18,23 +18,22 @@ type FormFieldProps = {
   touched?: boolean;
   disabled: boolean;
   placeholder?: string;
-}
+};
 
-export const Field: React.FC<FieldProps> = ({
-  label, id, required, children,
-  hint,
-}) => {
+export const Field: React.FC<FieldProps> = ({ label, id, required, children, hint }) => {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
-        {!required && <span className="ml-1 text-xs font-normal text-muted-foreground">(optional)</span>}
+        {!required && (
+          <span className="ml-1 text-xs font-normal text-muted-foreground">(optional)</span>
+        )}
       </label>
       {children}
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
-}
+};
 
 export const FormField: React.FC<FormFieldProps> = ({
   label,
@@ -51,7 +50,10 @@ export const FormField: React.FC<FormFieldProps> = ({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+      <label
+        htmlFor={id}
+        className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
+      >
         {label}
       </label>
       <input
@@ -69,9 +71,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           showError ? 'border-red-400 focus:ring-red-300' : 'border-border',
         ].join(' ')}
       />
-      {showError && (
-        <p className="text-xs text-red-500">{error}</p>
-      )}
+      {showError && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
-}
+};

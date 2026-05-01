@@ -65,7 +65,6 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-
     if (res.status === 401) {
       globalLogout();
     }
@@ -83,7 +82,10 @@ export async function getCompany(companyId: string): Promise<CompanyData> {
   return handleResponse<CompanyData>(res);
 }
 
-export async function updateCompany(companyId: string, data: Partial<CompanyData>): Promise<CompanyData> {
+export async function updateCompany(
+  companyId: string,
+  data: Partial<CompanyData>,
+): Promise<CompanyData> {
   const res = await fetch(`${BASE}/${companyId}`, {
     method: 'PATCH',
     headers: authHeaders(),
@@ -97,13 +99,21 @@ export async function getCompanyHazmat(dotNumber: string): Promise<{ hm_ind: 'Y'
   return handleResponse<{ hm_ind: 'Y' | 'N' | null }>(res);
 }
 
-export async function getCompanyInspections(dotNumber: string): Promise<{ data: Inspection[], pagination?: any } | { inspections: Inspection[] } | Inspection[]> {
+export async function getCompanyInspections(
+  dotNumber: string,
+): Promise<
+  { data: Inspection[]; pagination?: any } | { inspections: Inspection[] } | Inspection[]
+> {
   const res = await fetch(`${BASE}/${dotNumber}/fmcsa/inspections`, { headers: authHeaders() });
   return handleResponse(res);
 }
 
-export async function getInspectionViolations(inspectionId: string): Promise<{ violations: Violation[] } | Violation[]> {
-  const res = await fetch(`${BASE}/inspections/${inspectionId}/violations`, { headers: authHeaders() });
+export async function getInspectionViolations(
+  inspectionId: string,
+): Promise<{ violations: Violation[] } | Violation[]> {
+  const res = await fetch(`${BASE}/inspections/${inspectionId}/violations`, {
+    headers: authHeaders(),
+  });
   return handleResponse(res);
 }
 

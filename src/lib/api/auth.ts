@@ -107,7 +107,6 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-
     if (res.status === 401) {
       globalLogout();
     }
@@ -248,14 +247,11 @@ export async function updateUserStatus(userId: string, isActive: boolean): Promi
 
 // ─── React Query hooks ─────────────────────────────────────────────────────────
 
-export const useSignInMutation = () =>
-  useMutation({ mutationFn: signIn });
+export const useSignInMutation = () => useMutation({ mutationFn: signIn });
 
-export const useSignUpAdminMutation = () =>
-  useMutation({ mutationFn: signUpAdmin });
+export const useSignUpAdminMutation = () => useMutation({ mutationFn: signUpAdmin });
 
-export const useSignUpInvitedMutation = () =>
-  useMutation({ mutationFn: signUpInvited });
+export const useSignUpInvitedMutation = () => useMutation({ mutationFn: signUpInvited });
 
 export const useInviteInfoQuery = (token: string | null) =>
   useQuery({
@@ -269,7 +265,7 @@ export const useCompanyUsersQuery = () =>
   useQuery({
     queryKey: ['companyUsers'],
     queryFn: getCompanyUsers,
-});
+  });
 
 export const usePendingInvitationsQuery = () =>
   useQuery({
@@ -278,8 +274,8 @@ export const usePendingInvitationsQuery = () =>
   });
 
 export const useSendInvitationMutation = () =>
-  useMutation({ mutationFn: ({ email, role }: { email: string; role: UserRole }) =>
-    sendInvitation(email, role),
+  useMutation({
+    mutationFn: ({ email, role }: { email: string; role: UserRole }) => sendInvitation(email, role),
   });
 
 export const useCancelInvitationMutation = () =>
@@ -289,30 +285,33 @@ export const useResendInvitationMutation = () =>
   useMutation({ mutationFn: (id: string) => resendInvitation(id) });
 
 export const useUpdateUserRoleMutation = () =>
-  useMutation({ mutationFn: ({ userId, role }: { userId: string; role: UserRole }) =>
-    updateUserRole(userId, role),
+  useMutation({
+    mutationFn: ({ userId, role }: { userId: string; role: UserRole }) =>
+      updateUserRole(userId, role),
   });
 
 export const useRequestPasswordResetMutation = () =>
   useMutation({ mutationFn: (email: string) => requestPasswordReset(email) });
 
 export const useUpdatePasswordMutation = () =>
-  useMutation({ mutationFn: ({ password, accessToken }: { password: string; accessToken: string }) =>
-    updatePassword(password, accessToken),
+  useMutation({
+    mutationFn: ({ password, accessToken }: { password: string; accessToken: string }) =>
+      updatePassword(password, accessToken),
   });
 
 export const useUpdateUserStatusMutation = () =>
-  useMutation({ mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
-    updateUserStatus(userId, isActive),
+  useMutation({
+    mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
+      updateUserStatus(userId, isActive),
   });
 
 export const useMeQuery = () => {
   const { accessToken } = useAuthStore();
-  
+
   return useQuery({
     queryKey: ['me'],
     queryFn: getMe,
-    enabled: !!accessToken, 
+    enabled: !!accessToken,
     retry: false,
   });
 };

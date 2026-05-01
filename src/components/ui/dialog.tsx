@@ -61,7 +61,12 @@ export const Modal: React.FC<ModalProps> = ({
               aria-label="Close dialog"
             >
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-                <path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path
+                  d="M3 3l9 9M12 3l-9 9"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
               </svg>
             </DialogPrimitive.Close>
           </div>

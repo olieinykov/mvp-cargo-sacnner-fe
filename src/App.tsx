@@ -49,9 +49,9 @@ const App: React.FC = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/audits" element={<AuditsPage />} />
-            
-            <Route 
-              path="/users" 
+
+            <Route
+              path="/users"
               element={
                 isLoading ? (
                   <div className="flex h-full items-center justify-center">
@@ -62,17 +62,17 @@ const App: React.FC = () => {
                 ) : (
                   <Navigate to="/audits" replace />
                 )
-              } 
+              }
             />
             <Route path="/company" element={<CompanyDetailsPage />} />
             <Route path="/company/inspections" element={<CompanyInspectionsPage />} />
             <Route path="*" element={<Navigate to="/audits" replace />} />
           </Route>
         </Route>
-        
+
         <Route path="*" element={<Navigate to="/sign-in" replace />} />
       </Routes>
-      
+
       <AppToaster />
     </>
   );
@@ -88,11 +88,11 @@ function AppToaster() {
       position="bottom-right"
       toastOptions={{
         classNames: {
-          toast:       'rounded-xl border border-border bg-background text-foreground shadow-lg text-sm',
-          title:       'font-semibold',
+          toast: 'rounded-xl border border-border bg-background text-foreground shadow-lg text-sm',
+          title: 'font-semibold',
           description: 'text-muted-foreground',
-          success:     'border-emerald-200 bg-emerald-50 text-emerald-900',
-          error:       'border-red-200 bg-red-50 text-red-900',
+          success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
+          error: 'border-red-200 bg-red-50 text-red-900',
         },
       }}
     />

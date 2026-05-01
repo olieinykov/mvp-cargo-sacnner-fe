@@ -1,4 +1,4 @@
-type HazmatBadgeProps = { status: 'Y' | 'N' | null | 'loading' | 'error' }
+type HazmatBadgeProps = { status: 'Y' | 'N' | null | 'loading' | 'error' };
 
 export const HazmatBadge: React.FC<HazmatBadgeProps> = ({ status }) => {
   if (status === 'loading') {
@@ -6,7 +6,12 @@ export const HazmatBadge: React.FC<HazmatBadgeProps> = ({ status }) => {
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <path
+            d="M12 2a10 10 0 0 1 10 10"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
         </svg>
         Checking FMCSA…
       </div>
@@ -18,7 +23,12 @@ export const HazmatBadge: React.FC<HazmatBadgeProps> = ({ status }) => {
       <span className="inline-flex items-center gap-1.5 rounded-md bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-500 ring-1 ring-inset ring-zinc-200">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path
+            d="M12 8v4M12 16h.01"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
         </svg>
         Not found in FMCSA
       </span>
@@ -44,4 +54,4 @@ export const HazmatBadge: React.FC<HazmatBadgeProps> = ({ status }) => {
   }
 
   return <span className="text-xs text-muted-foreground/50 italic">Unknown</span>;
-}
+};

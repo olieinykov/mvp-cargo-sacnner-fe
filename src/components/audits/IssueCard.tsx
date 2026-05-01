@@ -1,7 +1,7 @@
-import { BADGE, SEVERITY_CONFIG } from "../../lib/utils/constants";
-import type { AuditIssue } from "../../lib/utils/useAuditStore";
+import { BADGE, SEVERITY_CONFIG } from '../../lib/utils/constants';
+import type { AuditIssue } from '../../lib/utils/useAuditStore';
 
-type IssueCardProps = { issue: AuditIssue }
+type IssueCardProps = { issue: AuditIssue };
 
 export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
   const cfg = SEVERITY_CONFIG[issue.severity];
@@ -28,4 +28,4 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
       </div>
     </div>
   );
-}
+};

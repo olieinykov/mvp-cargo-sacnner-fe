@@ -1,19 +1,14 @@
-import React from "react";
-import { cn } from "../../lib/utils/cn";
+import React from 'react';
+import { cn } from '../../lib/utils/cn';
 
 type NavItemProps = {
   icon: React.ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;
-}
+};
 
-export const NavItem: React.FC<NavItemProps> = ({
-  icon,
-  label,
-  active,
-  onClick,
-}) => {
+export const NavItem: React.FC<NavItemProps> = ({ icon, label, active, onClick }) => {
   return (
     <button
       type="button"
@@ -31,4 +26,4 @@ export const NavItem: React.FC<NavItemProps> = ({
       {label}
     </button>
   );
-}
+};

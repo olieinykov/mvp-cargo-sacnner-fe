@@ -23,7 +23,8 @@ const scoreColor = (score: number): string => {
   return 'text-emerald-500';
 };
 
-const BADGE = 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium leading-none ring-1 ring-inset';
+const BADGE =
+  'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium leading-none ring-1 ring-inset';
 
 function StatusBadge({ passed }: { passed: boolean }) {
   return passed ? (
@@ -39,13 +40,8 @@ function StatusBadge({ passed }: { passed: boolean }) {
   );
 }
 
-function SeverityPills({
-  counts,
-}: {
-  counts: StoredAudit['response']['audit']['counts'];
-}) {
-  const hasAny =
-    counts.critical > 0 || counts.major > 0 || counts.minor > 0 || counts.warning > 0;
+function SeverityPills({ counts }: { counts: StoredAudit['response']['audit']['counts'] }) {
+  const hasAny = counts.critical > 0 || counts.major > 0 || counts.minor > 0 || counts.warning > 0;
 
   if (!hasAny) {
     return <span className="text-xs text-muted-foreground/50">—</span>;
@@ -223,22 +219,30 @@ export const AuditsTable: React.FC<Props> = ({
           <tbody>
             {Array.from({ length: SKELETON_ROW_COUNT }).map((_, rowIndex) => (
               <TableRow key={`audit-skeleton-${rowIndex}`}>
-                <TableCell><Skeleton className="h-4 w-6" /></TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-6" />
+                </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1.5">
                     <Skeleton className="h-4 w-28" />
                     <Skeleton className="h-3 w-16" />
                   </div>
                 </TableCell>
-                <TableCell><Skeleton className="h-6 w-20 rounded-md" /></TableCell>
-                <TableCell><Skeleton className="h-4 w-10" /></TableCell>
+                <TableCell>
+                  <Skeleton className="h-6 w-20 rounded-md" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-10" />
+                </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
                     <Skeleton className="h-5 w-16 rounded-md" />
                     <Skeleton className="h-5 w-14 rounded-md" />
                   </div>
                 </TableCell>
-                <TableCell><Skeleton className="h-4 w-full max-w-xs" /></TableCell>
+                <TableCell>
+                  <Skeleton className="h-4 w-full max-w-xs" />
+                </TableCell>
               </TableRow>
             ))}
           </tbody>
@@ -252,15 +256,34 @@ export const AuditsTable: React.FC<Props> = ({
     return (
       <div className="flex flex-col items-center gap-4 py-20 text-muted-foreground">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/50 bg-muted/30">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-50" aria-hidden="true">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="opacity-50"
+            aria-hidden="true"
+          >
+            <path
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
             <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path
+              d="M9 12h6M9 16h4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
         <div className="space-y-1 text-center">
           <p className="text-sm font-medium text-foreground">No audits yet</p>
-          <p className="text-xs text-muted-foreground">Upload files to run your first hazmat compliance check.</p>
+          <p className="text-xs text-muted-foreground">
+            Upload files to run your first hazmat compliance check.
+          </p>
         </div>
         {onCreateClick && (
           <button
@@ -269,7 +292,12 @@ export const AuditsTable: React.FC<Props> = ({
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M12 5v14M5 12h14"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
             Create your first audit
           </button>
@@ -291,7 +319,9 @@ export const AuditsTable: React.FC<Props> = ({
               onClick={() => onRowClick(audit)}
               tabIndex={0}
               aria-label={`Audit ${idx + 1}, ${result.is_passed ? 'passed' : 'failed'}, score ${result.score}`}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onRowClick(audit); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') onRowClick(audit);
+              }}
             >
               <TableCell className="font-mono text-xs text-muted-foreground/60">
                 {idx + 1}
@@ -312,9 +342,7 @@ export const AuditsTable: React.FC<Props> = ({
                 <SeverityPills counts={result.counts} />
               </TableCell>
               <TableCell className="max-w-sm">
-                <p className="truncate text-xs text-muted-foreground">
-                  {result.summary}
-                </p>
+                <p className="truncate text-xs text-muted-foreground">{result.summary}</p>
               </TableCell>
             </TableRow>
           );

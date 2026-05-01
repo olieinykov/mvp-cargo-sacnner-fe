@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
 type LimitControlProps = {
   value: number;
   onChange: (n: number) => void;
   disabled: boolean;
-}
+};
 
 type SelectOption<T> = {
   value: T;
@@ -23,11 +23,7 @@ type SelectControlProps<T extends string> = {
 
 const LIMIT_PRESETS = [10, 20, 50, 100];
 
-export const LimitControl: React.FC<LimitControlProps> = ({
-  value,
-  onChange,
-  disabled,
-}) => {
+export const LimitControl: React.FC<LimitControlProps> = ({ value, onChange, disabled }) => {
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -37,13 +33,13 @@ export const LimitControl: React.FC<LimitControlProps> = ({
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === 'Escape') setOpen(false);
     };
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [open]);
 
@@ -73,9 +69,15 @@ export const LimitControl: React.FC<LimitControlProps> = ({
             viewBox="0 0 12 12"
             fill="none"
             aria-hidden="true"
-            className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           >
-            <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M2.5 4.5L6 8l3.5-3.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
 
@@ -97,14 +99,26 @@ export const LimitControl: React.FC<LimitControlProps> = ({
                     onClick={() => handleSelect(opt)}
                     className={`flex w-full items-center justify-between gap-4 rounded-lg px-3 py-2 text-sm transition-colors ${
                       isSelected
-                        ? "bg-primary/10 font-semibold text-primary"
-                        : "text-foreground hover:bg-muted"
+                        ? 'bg-primary/10 font-semibold text-primary'
+                        : 'text-foreground hover:bg-muted'
                     }`}
                   >
                     <span>{opt}</span>
                     {isSelected && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6.5l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M2 6.5l3 3 5-5"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                   </button>
@@ -116,7 +130,7 @@ export const LimitControl: React.FC<LimitControlProps> = ({
       </div>
     </div>
   );
-}
+};
 
 // ─── Reusable dropdown select ──────────────────────────────────────────────────
 
@@ -136,13 +150,13 @@ export const SelectControl = <T extends string>({
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === 'Escape') setOpen(false);
     };
-    document.addEventListener("mousedown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [open]);
 
@@ -166,9 +180,15 @@ export const SelectControl = <T extends string>({
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden="true"
-          className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         >
-          <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M2.5 4.5L6 8l3.5-3.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
@@ -187,17 +207,26 @@ export const SelectControl = <T extends string>({
                   type="button"
                   role="option"
                   aria-selected={isSelected}
-                  onClick={() => { onChange(opt.value); setOpen(false); }}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setOpen(false);
+                  }}
                   className={`flex w-full items-center justify-between gap-4 rounded-lg px-3 py-2 text-sm transition-colors ${
                     isSelected
-                      ? "bg-primary/10 font-semibold text-primary"
-                      : "text-foreground hover:bg-muted"
+                      ? 'bg-primary/10 font-semibold text-primary'
+                      : 'text-foreground hover:bg-muted'
                   }`}
                 >
                   <span>{opt.label}</span>
                   {isSelected && (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                      <path d="M2 6.5l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      <path
+                        d="M2 6.5l3 3 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   )}
                 </button>
@@ -208,4 +237,4 @@ export const SelectControl = <T extends string>({
       )}
     </div>
   );
-}
+};

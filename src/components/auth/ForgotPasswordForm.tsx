@@ -1,16 +1,13 @@
-import { useState } from "react";
-import { useRequestPasswordResetMutation } from "../../lib/api/auth";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useRequestPasswordResetMutation } from '../../lib/api/auth';
+import { toast } from 'sonner';
 
 type ForgotPasswordViewProps = {
   initialEmail: string;
   onBack: () => void;
-}
+};
 
-export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
-  initialEmail,
-  onBack,
-}) => {
+export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({ initialEmail, onBack }) => {
   const [email, setEmail] = useState(initialEmail);
   const [sent, setSent] = useState(false);
   const mutation = useRequestPasswordResetMutation();
@@ -30,25 +27,25 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
       <div className="flex flex-col items-center gap-4 py-4 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 ring-1 ring-emerald-200">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path 
-              d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8" 
-              stroke="#059669" 
-              strokeWidth="1.8" 
-              strokeLinecap="round" 
+            <path
+              d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8"
+              stroke="#059669"
+              strokeWidth="1.8"
+              strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <path 
-              d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" 
-              stroke="#059669" 
-              strokeWidth="1.8" 
-              strokeLinecap="round" 
+            <path
+              d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+              stroke="#059669"
+              strokeWidth="1.8"
+              strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <path 
-              d="m16 19 2 2 4-4" 
-              stroke="#059669" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
+            <path
+              d="m16 19 2 2 4-4"
+              stroke="#059669"
+              strokeWidth="2.5"
+              strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
@@ -106,13 +103,31 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
         >
           {mutation.isPending ? (
             <>
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+              <svg
+                className="h-4 w-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
               </svg>
               Sending…
             </>
-          ) : 'Send reset link'}
+          ) : (
+            'Send reset link'
+          )}
         </button>
 
         <button
@@ -125,4 +140,4 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
       </form>
     </>
   );
-}
+};

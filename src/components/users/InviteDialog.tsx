@@ -1,18 +1,18 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useSendInvitationMutation } from "../../lib/api/auth";
-import type { UserRole } from "../../lib/api/auth";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { UserRoleSelect } from "./UsersControl";
+import { useQueryClient } from '@tanstack/react-query';
+import { useSendInvitationMutation } from '../../lib/api/auth';
+import type { UserRole } from '../../lib/api/auth';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { UserRoleSelect } from './UsersControl';
 
-type InviteDialogProps = { open: boolean; onClose: () => void }
-type InvitationsEmptyStateProps = { onInvite: () => void }
+type InviteDialogProps = { open: boolean; onClose: () => void };
+type InvitationsEmptyStateProps = { onInvite: () => void };
 
-export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
+export const InviteDialog: React.FC<InviteDialogProps> = ({ open, onClose }) => {
   const mutation = useSendInvitationMutation();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
-  const [role,  setRole]  = useState<UserRole>('user');
+  const [role, setRole] = useState<UserRole>('user');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +39,11 @@ export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
+      <div
+        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+        aria-hidden="true"
+        onClick={onClose}
+      />
       <div
         role="dialog"
         aria-modal="true"
@@ -62,14 +66,21 @@ export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
             className="mt-0.5 rounded-md p-1 text-muted-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="invite-email" className="text-sm font-medium text-foreground">Email</label>
+            <label htmlFor="invite-email" className="text-sm font-medium text-foreground">
+              Email
+            </label>
             <input
               id="invite-email"
               type="email"
@@ -82,13 +93,11 @@ export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="invite-role" className="text-sm font-medium text-foreground">Role</label>
+            <label htmlFor="invite-role" className="text-sm font-medium text-foreground">
+              Role
+            </label>
             <div className="flex gap-2">
-             <UserRoleSelect 
-                value={role} 
-                onChange={setRole} 
-                disabled={mutation.isPending} 
-              />
+              <UserRoleSelect value={role} onChange={setRole} disabled={mutation.isPending} />
             </div>
           </div>
 
@@ -108,32 +117,52 @@ export const InviteDialog: React.FC<InviteDialogProps> =({ open, onClose }) => {
               {mutation.isPending ? (
                 <>
                   <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
                   </svg>
                   Sending…
                 </>
-              ) : 'Send invitation'}
+              ) : (
+                'Send invitation'
+              )}
             </button>
           </div>
         </form>
       </div>
     </>
   );
-}
+};
 
 export const InvitationsEmptyState: React.FC<InvitationsEmptyStateProps> = ({ onInvite }) => {
   return (
     <div className="flex flex-col items-center gap-4 py-20">
       <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/50 bg-muted/30">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="opacity-50">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          <path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path
+            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <path d="M22 6l-10 7L2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </div>
       <div className="space-y-1 text-center">
         <p className="text-sm font-medium text-foreground">No pending invitations</p>
-        <p className="text-xs text-muted-foreground">All invitations have been accepted or cancelled.</p>
+        <p className="text-xs text-muted-foreground">
+          All invitations have been accepted or cancelled.
+        </p>
       </div>
       <button
         type="button"
@@ -141,12 +170,17 @@ export const InvitationsEmptyState: React.FC<InvitationsEmptyStateProps> = ({ on
         className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-          <path d="M20 8v6M23 11h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path
+            d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+          <path d="M20 8v6M23 11h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
         Send invitation
       </button>
     </div>
   );
-}
+};

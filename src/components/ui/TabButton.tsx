@@ -1,18 +1,13 @@
-import React from "react";
+import React from 'react';
 
 type TabButtonProps = {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
   count?: number;
-}
+};
 
-export const TabButton: React.FC<TabButtonProps> = ({
-  active,
-  onClick,
-  children,
-  count,
-}) => {
+export const TabButton: React.FC<TabButtonProps> = ({ active, onClick, children, count }) => {
   return (
     <button
       type="button"
@@ -25,12 +20,14 @@ export const TabButton: React.FC<TabButtonProps> = ({
     >
       {children}
       {count !== undefined && (
-        <span className={`rounded-full px-1.5 py-0.5 text-xs font-semibold leading-none ${
-          active ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
-        }`}>
+        <span
+          className={`rounded-full px-1.5 py-0.5 text-xs font-semibold leading-none ${
+            active ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'
+          }`}
+        >
           {count}
         </span>
       )}
     </button>
   );
-}
+};

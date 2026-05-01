@@ -1,5 +1,5 @@
-type StaticInfoRowProps = { label: string; value: React.ReactNode }
-type DetailRowProps = { label: string; children: React.ReactNode }
+type StaticInfoRowProps = { label: string; value: React.ReactNode };
+type DetailRowProps = { label: string; children: React.ReactNode };
 
 export const StaticInfoRow: React.FC<StaticInfoRowProps> = ({ label, value }) => {
   return (
@@ -12,13 +12,15 @@ export const StaticInfoRow: React.FC<StaticInfoRowProps> = ({ label, value }) =>
       </div>
     </div>
   );
-}
+};
 
 export const DetailRow: React.FC<DetailRowProps> = ({ label, children }) => {
   return (
     <div className="flex flex-col gap-0.5 rounded-lg border border-border/30 bg-muted/10 px-3 py-2.5">
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
       <div className="text-sm text-foreground/90">{children}</div>
     </div>
   );
-}
+};

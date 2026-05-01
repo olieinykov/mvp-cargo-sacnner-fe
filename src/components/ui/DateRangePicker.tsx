@@ -1,5 +1,5 @@
-import React from "react";
-import { formatLabel, isoDate } from "../../lib/utils/date";
+import React from 'react';
+import { formatLabel, isoDate } from '../../lib/utils/date';
 
 type DateRange = { from: string | undefined; to: string | undefined };
 
@@ -21,10 +21,20 @@ type DateRangePickerProps = {
 };
 
 const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
-const DOW = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 export const CalendarMonth: React.FC<CalendarMonthProps> = ({
   year,
@@ -54,7 +64,10 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
       </p>
       <div className="grid grid-cols-7 gap-y-0.5">
         {DOW.map((d) => (
-          <span key={d} className="flex h-7 items-center justify-center text-[11px] text-muted-foreground/60">
+          <span
+            key={d}
+            className="flex h-7 items-center justify-center text-[11px] text-muted-foreground/60"
+          >
             {d}
           </span>
         ))}
@@ -80,15 +93,15 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
               aria-label={iso}
               aria-pressed={isFrom || isTo}
               className={[
-                "flex h-7 w-full items-center justify-center rounded-md text-xs transition-colors",
+                'flex h-7 w-full items-center justify-center rounded-md text-xs transition-colors',
                 isFrom || isTo
-                  ? "bg-primary text-primary-foreground font-semibold"
+                  ? 'bg-primary text-primary-foreground font-semibold'
                   : inRange
-                  ? "bg-primary/10 text-foreground"
-                  : isToday
-                  ? "ring-1 ring-inset ring-primary/40 text-primary font-medium hover:bg-muted"
-                  : "text-foreground hover:bg-muted",
-              ].join(" ")}
+                    ? 'bg-primary/10 text-foreground'
+                    : isToday
+                      ? 'ring-1 ring-inset ring-primary/40 text-primary font-medium hover:bg-muted'
+                      : 'text-foreground hover:bg-muted',
+              ].join(' ')}
             >
               {day}
             </button>
@@ -97,7 +110,7 @@ export const CalendarMonth: React.FC<CalendarMonthProps> = ({
       </div>
     </div>
   );
-}
+};
 
 export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   from,
@@ -106,7 +119,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onChange,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [selecting, setSelecting] = React.useState<"from" | "to">("from");
+  const [selecting, setSelecting] = React.useState<'from' | 'to'>('from');
   const [hovered, setHovered] = React.useState<string | undefined>();
   const ref = React.useRef<HTMLDivElement>(null);
 
@@ -119,38 +132,44 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     const onOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
-    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("mousedown", onOutside);
-    document.addEventListener("keydown", onEsc);
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onOutside);
+    document.addEventListener('keydown', onEsc);
     return () => {
-      document.removeEventListener("mousedown", onOutside);
-      document.removeEventListener("keydown", onEsc);
+      document.removeEventListener('mousedown', onOutside);
+      document.removeEventListener('keydown', onEsc);
     };
   }, [open]);
 
   const prevMonth = () => {
-    if (viewMonth === 0) { setViewYear((y) => y - 1); setViewMonth(11); }
-    else setViewMonth((m) => m - 1);
+    if (viewMonth === 0) {
+      setViewYear((y) => y - 1);
+      setViewMonth(11);
+    } else setViewMonth((m) => m - 1);
   };
   const nextMonth = () => {
-    if (viewMonth === 11) { setViewYear((y) => y + 1); setViewMonth(0); }
-    else setViewMonth((m) => m + 1);
+    if (viewMonth === 11) {
+      setViewYear((y) => y + 1);
+      setViewMonth(0);
+    } else setViewMonth((m) => m + 1);
   };
 
   const secondMonth = viewMonth === 11 ? 0 : viewMonth + 1;
   const secondYear = viewMonth === 11 ? viewYear + 1 : viewYear;
 
   const handleDayClick = (iso: string) => {
-    if (selecting === "from") {
+    if (selecting === 'from') {
       onChange({ from: iso, to: undefined });
-      setSelecting("to");
+      setSelecting('to');
     } else {
       if (from && iso < from) {
         onChange({ from: iso, to: from });
       } else {
         onChange({ from, to: iso });
       }
-      setSelecting("from");
+      setSelecting('from');
       setOpen(false);
     }
   };
@@ -158,7 +177,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     onChange({ from: undefined, to: undefined });
-    setSelecting("from");
+    setSelecting('from');
   };
 
   const hasValue = !!(from || to);
@@ -168,19 +187,42 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => { setOpen((o) => !o); setSelecting("from"); }}
+        onClick={() => {
+          setOpen((o) => !o);
+          setSelecting('from');
+        }}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label="Date range"
         className={[
-          "flex h-8 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium shadow-sm transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 text-foreground"
-        ].join(" ")}
+          'flex h-8 items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium shadow-sm transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 text-foreground',
+        ].join(' ')}
       >
         {/* calendar icon */}
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true" className="shrink-0">
-          <rect x="1" y="2.5" width="12" height="10.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 14 14"
+          fill="none"
+          aria-hidden="true"
+          className="shrink-0"
+        >
+          <rect
+            x="1"
+            y="2.5"
+            width="12"
+            height="10.5"
+            rx="1.5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+          />
           <path d="M1 5.5h12" stroke="currentColor" strokeWidth="1.4" />
-          <path d="M4.5 1v3M9.5 1v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          <path
+            d="M4.5 1v3M9.5 1v3"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
         </svg>
         <span>{formatLabel(from, to)}</span>
         {hasValue && (
@@ -191,7 +233,12 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground"
           >
             <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
-              <path d="M1 1l6 6M7 1L1 7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <path
+                d="M1 1l6 6M7 1L1 7"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
             </svg>
           </span>
         )}
@@ -201,9 +248,15 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           viewBox="0 0 12 12"
           fill="none"
           aria-hidden="true"
-          className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         >
-          <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M2.5 4.5L6 8l3.5-3.5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </button>
 
@@ -222,7 +275,13 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M9 11L5 7l4-4"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <div className="flex gap-8">
@@ -252,17 +311,23 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M5 3l4 4-4 4"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
 
           {/* hint */}
           <p className="mt-1 text-center text-[11px] text-muted-foreground/60">
-            {selecting === "from" ? "Select start date" : "Select end date"}
+            {selecting === 'from' ? 'Select start date' : 'Select end date'}
           </p>
         </div>
       )}
     </div>
   );
-}
+};

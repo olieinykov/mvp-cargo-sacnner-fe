@@ -1,16 +1,16 @@
-import type { Inspection } from "../../lib/api/company";
-import { CI_STATUS_LABELS, INSP_LEVEL_LABELS } from "../../lib/utils/constants";
-import { fmtDate } from "../../lib/utils/date";
-import { Modal } from "../ui/dialog";
-import { DetailRow } from "../ui/InfoRow";
-import { YesNoBadge } from "../ui/YesNo";
-import { ViolationsSection } from "./ViolationsSection";
+import type { Inspection } from '../../lib/api/company';
+import { CI_STATUS_LABELS, INSP_LEVEL_LABELS } from '../../lib/utils/constants';
+import { fmtDate } from '../../lib/utils/date';
+import { Modal } from '../ui/dialog';
+import { DetailRow } from '../ui/InfoRow';
+import { YesNoBadge } from '../ui/YesNo';
+import { ViolationsSection } from './ViolationsSection';
 
 type InspectionDetailModalProps = {
   inspection: Inspection | null;
   open: boolean;
   onClose: () => void;
-}
+};
 
 export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
   inspection,
@@ -19,13 +19,20 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
 }) => {
   if (!open || !inspection) return null;
 
-  const level = inspection.insp_level_id != null ? INSP_LEVEL_LABELS[inspection.insp_level_id] ?? `Level ${inspection.insp_level_id}` : '—';
-  const status = inspection.ci_status_code ? (CI_STATUS_LABELS[inspection.ci_status_code] ?? inspection.ci_status_code) : '—';
+  const level =
+    inspection.insp_level_id != null
+      ? (INSP_LEVEL_LABELS[inspection.insp_level_id] ?? `Level ${inspection.insp_level_id}`)
+      : '—';
+  const status = inspection.ci_status_code
+    ? (CI_STATUS_LABELS[inspection.ci_status_code] ?? inspection.ci_status_code)
+    : '—';
 
   return (
     <Modal
       open={open}
-      onOpenChange={(v) => { if (!v) onClose(); }}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
       title={`Inspection ${inspection.inspection_id}`}
       description={`Reported in ${inspection.report_state} · ${fmtDate(inspection.insp_date)}`}
     >
@@ -37,8 +44,12 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
         <DetailRow label="Status">{status}</DetailRow>
         <DetailRow label="Report #">{inspection.report_number ?? '—'}</DetailRow>
         <DetailRow label="Facility">{inspection.insp_facility ?? '—'}</DetailRow>
-        <DetailRow label="Post Accident"><YesNoBadge value={inspection.post_acc_ind}/></DetailRow>
-        <DetailRow label="Hazmat Placards Req."><YesNoBadge value={inspection.hazmat_placard_req}/></DetailRow>
+        <DetailRow label="Post Accident">
+          <YesNoBadge value={inspection.post_acc_ind} />
+        </DetailRow>
+        <DetailRow label="Hazmat Placards Req.">
+          <YesNoBadge value={inspection.hazmat_placard_req} />
+        </DetailRow>
         <DetailRow label="Location">{inspection.location_desc ?? '—'}</DetailRow>
       </div>
 
@@ -71,10 +82,14 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
           ].map(({ label, val }) => (
             <DetailRow key={label} label={label}>
               {val != null ? (
-                <span className={`font-mono text-base font-bold ${val > 0 ? 'text-amber-600' : 'text-muted-foreground'}`}>
+                <span
+                  className={`font-mono text-base font-bold ${val > 0 ? 'text-amber-600' : 'text-muted-foreground'}`}
+                >
                   {val}
                 </span>
-              ) : '—'}
+              ) : (
+                '—'
+              )}
             </DetailRow>
           ))}
         </div>
@@ -86,8 +101,12 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
           Enforcement Checks
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <DetailRow label="Alcohol / Controlled Sub."><YesNoBadge value={inspection.alcohol_control_sub}/></DetailRow>
-          <DetailRow label="Drug Interdiction"><YesNoBadge value={inspection.drug_intrdctn_search}/></DetailRow>
+          <DetailRow label="Alcohol / Controlled Sub.">
+            <YesNoBadge value={inspection.alcohol_control_sub} />
+          </DetailRow>
+          <DetailRow label="Drug Interdiction">
+            <YesNoBadge value={inspection.drug_intrdctn_search} />
+          </DetailRow>
         </div>
       </div>
 
@@ -100,4 +119,4 @@ export const InspectionDetailModal: React.FC<InspectionDetailModalProps> = ({
       </div>
     </Modal>
   );
-}
+};

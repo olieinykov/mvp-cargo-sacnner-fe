@@ -55,4 +55,3 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
-

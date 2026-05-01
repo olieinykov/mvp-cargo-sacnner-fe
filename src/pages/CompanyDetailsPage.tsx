@@ -2,7 +2,11 @@ import React from 'react';
 import { toast } from 'sonner';
 import { useFormik } from 'formik';
 import { Card, CardHeader, CardContent } from '../components/ui/card';
-import { useCompanyHazmatQuery, useCompanyQuery, useUpdateCompanyMutation } from '../lib/api/company';
+import {
+  useCompanyHazmatQuery,
+  useCompanyQuery,
+  useUpdateCompanyMutation,
+} from '../lib/api/company';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCompanyUsersQuery, useMeQuery } from '../lib/api/auth';
 import { validateCompanyForm } from '../lib/utils/typeGuard';
@@ -16,8 +20,16 @@ export const CompanyDetailsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { data: user, isLoading: userLoading } = useMeQuery();
 
-  const { data: company, isLoading: companyLoading, error: companyError } = useCompanyQuery(user?.companyId);
-  const { data: hazmatData, isLoading: hazmatLoading, isError: hazmatError } = useCompanyHazmatQuery(company?.dotNumber);
+  const {
+    data: company,
+    isLoading: companyLoading,
+    error: companyError,
+  } = useCompanyQuery(user?.companyId);
+  const {
+    data: hazmatData,
+    isLoading: hazmatLoading,
+    isError: hazmatError,
+  } = useCompanyHazmatQuery(company?.dotNumber);
   const { mutateAsync: updateCompany } = useUpdateCompanyMutation();
 
   const { data: users } = useCompanyUsersQuery();
@@ -89,9 +101,21 @@ export const CompanyDetailsPage: React.FC = () => {
         <Card>
           <CardContent className="py-8">
             <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5 ring-1 ring-inset ring-red-600/10">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="mt-0.5 shrink-0 text-red-500" aria-hidden="true">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="mt-0.5 shrink-0 text-red-500"
+                aria-hidden="true"
+              >
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-                <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                <path
+                  d="M12 8v4M12 16h.01"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
               </svg>
               <div>
                 <p className="text-sm font-semibold text-red-800">Failed to load company details</p>
@@ -132,13 +156,42 @@ export const CompanyDetailsPage: React.FC = () => {
                     className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {formik.isSubmitting ? (
-                      <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-                        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                      <svg
+                        className="h-3 w-3 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          opacity="0.25"
+                        />
+                        <path
+                          d="M12 2a10 10 0 0 1 10 10"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                        />
                       </svg>
                     ) : (
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M20 6L9 17l-5-5"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                     Save Changes
@@ -247,41 +300,51 @@ export const CompanyDetailsPage: React.FC = () => {
               System Information
             </p>
             <div className="flex flex-col gap-2">
-              <StaticInfoRow label="Company ID" value={
-                <span className="font-mono text-xs text-muted-foreground">{company.id}</span>
-              } />
-              <StaticInfoRow label="Owner" value={
-                owner ? (
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium text-foreground">
-                      {owner.firstName} {owner.lastName}
+              <StaticInfoRow
+                label="Company ID"
+                value={
+                  <span className="font-mono text-xs text-muted-foreground">{company.id}</span>
+                }
+              />
+              <StaticInfoRow
+                label="Owner"
+                value={
+                  owner ? (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium text-foreground">
+                        {owner.firstName} {owner.lastName}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{owner.email}</span>
+                    </div>
+                  ) : company.ownerId ? (
+                    <span className="font-mono text-xs text-muted-foreground">
+                      {company.ownerId}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                      {owner.email}
+                  ) : (
+                    <span className="italic text-muted-foreground/50 text-xs">Not set</span>
+                  )
+                }
+              />
+              <StaticInfoRow
+                label="Email Confirmed"
+                value={
+                  company.isEmailConfirmed ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                      Confirmed
                     </span>
-                  </div>
-                ) : company.ownerId ? (
-                  <span className="font-mono text-xs text-muted-foreground">{company.ownerId}</span>
-                ) : (
-                  <span className="italic text-muted-foreground/50 text-xs">Not set</span>
-                )
-              } />
-              <StaticInfoRow label="Email Confirmed" value={
-                company.isEmailConfirmed ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                    Confirmed
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700 ring-1 ring-inset ring-yellow-600/20">
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-yellow-500" />
-                    Pending Confirmation
-                  </span>
-                )
-              } />
-              <StaticInfoRow label="Hazmat Authorization (FMCSA)" value={
-                <HazmatBadge status={hazmatStatus as any} />
-              } />
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700 ring-1 ring-inset ring-yellow-600/20">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-yellow-500" />
+                      Pending Confirmation
+                    </span>
+                  )
+                }
+              />
+              <StaticInfoRow
+                label="Hazmat Authorization (FMCSA)"
+                value={<HazmatBadge status={hazmatStatus as any} />}
+              />
             </div>
           </div>
         </CardContent>

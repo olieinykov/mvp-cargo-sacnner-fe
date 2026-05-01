@@ -1,26 +1,26 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useUpdateUserRoleMutation, useUpdateUserStatusMutation } from "../../lib/api/auth";
-import type { CompanyUser, UserRole } from "../../lib/api/auth";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { UserRoleSelect } from "./UsersControl";
+import { useQueryClient } from '@tanstack/react-query';
+import { useUpdateUserRoleMutation, useUpdateUserStatusMutation } from '../../lib/api/auth';
+import type { CompanyUser, UserRole } from '../../lib/api/auth';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { UserRoleSelect } from './UsersControl';
 
 type ChangeRoleDialogProps = {
   user: CompanyUser | null;
   currentUserId?: string;
   onClose: () => void;
-}
+};
 
 export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
   user,
   currentUserId,
   onClose,
 }) => {
-  const roleMutation   = useUpdateUserRoleMutation();
+  const roleMutation = useUpdateUserRoleMutation();
   const statusMutation = useUpdateUserStatusMutation();
-  const queryClient    = useQueryClient();
+  const queryClient = useQueryClient();
 
-  const [role, setRole]       = useState<UserRole>(user?.role ?? 'user');
+  const [role, setRole] = useState<UserRole>(user?.role ?? 'user');
   const [isActive, setIsActive] = useState<boolean>(user?.isActive ?? false);
 
   useEffect(() => {
@@ -33,12 +33,12 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
   if (!user) return null;
 
   const isOwner = user.isOwner;
-  const isSelf      = currentUserId === user.id;
+  const isSelf = currentUserId === user.id;
   const isDisabled = isSelf || isOwner;
   const roleChanged = role !== user.role;
   const statusChanged = isActive !== user.isActive;
-  const hasChanges  = roleChanged || statusChanged;
-  const isPending   = roleMutation.isPending || statusMutation.isPending;
+  const hasChanges = roleChanged || statusChanged;
+  const isPending = roleMutation.isPending || statusMutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +88,12 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
             className="mt-0.5 rounded-md p-1 text-muted-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              <path
+                d="M18 6L6 18M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           </button>
         </div>
@@ -99,11 +104,7 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
             <label htmlFor="role-select" className="text-xs font-medium text-muted-foreground">
               Role
             </label>
-            <UserRoleSelect
-              value={role}
-              onChange={setRole}
-              disabled={isDisabled}
-            />
+            <UserRoleSelect value={role} onChange={setRole} disabled={isDisabled} />
             {isSelf && (
               <p className="text-xs text-muted-foreground">You cannot change your own role.</p>
             )}
@@ -152,12 +153,25 @@ export const ChangeRoleDialog: React.FC<ChangeRoleDialogProps> = ({
               {isPending ? (
                 <>
                   <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
                   </svg>
                   Saving…
                 </>
-              ) : 'Save changes'}
+              ) : (
+                'Save changes'
+              )}
             </button>
           </div>
         </form>
